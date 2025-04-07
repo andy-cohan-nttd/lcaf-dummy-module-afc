@@ -1,5 +1,6 @@
 locals {
-  resource_names = toset(["rg", "mgmtlock"])
+  resource_names = toset(["rg", "rt", "mgmtgrp", "policy", "vnet", "nsg", "sn", "pdnsr", "pdnsroep", "pdnsrfr", "pdnsrvnl"])
+  product_family = "pdnsadm"
 }
 
 module "resource_names" {
@@ -8,9 +9,9 @@ module "resource_names" {
 
   for_each = local.resource_names
 
-  logical_product_family  = "pdns-policy"
+  logical_product_family  = local.product_family
   logical_product_service = "test"
-  region                  = var.region
+  region                  = var.location
   class_env               = var.environment
   cloud_resource_type     = each.value
   maximum_length          = 32
@@ -21,6 +22,20 @@ module "resource_group" {
   version = "~> 1.0"
 
   name     = module.resource_names["rg"].standard
-  location = var.region
+  location = var.location
   tags     = var.tags
+}
+
+data "azurerm_client_config" "current" {
+  # This data source is used to get the current Azure client configuration
+}
+
+module "management_group" {
+  # source  = "terraform.registry.launch.nttdata.com/module_primitive/management_group/azurerm"
+  # version = "~> 1.0"
+  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-management_group" # Use the local path for testing
+
+  name             = module.resource_names["mgmtgrp"].standard
+  display_name     = "Management Group for PDNS Policy"
+  subscription_ids = [data.azurerm_client_config.current.subscription_id] # Use the current subscription for the management group
 }
