@@ -1,30 +1,3 @@
-module "storage_subnet" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
-  version = "~> 1.1"
-
-  address_prefix              = var.storage_subnet_address_prefix
-  name                        = module.resource_names["sn"].minimal_random_suffix
-  network_security_group_name = local.nsg_name
-  # private_endpoint_network_policies =
-  # private_link_service_network_policies_enabled = true
-  resource_group_name  = module.resource_group.name
-  route_table_name     = local.route_table_name
-  service_endpoints    = [] # TODO
-  virtual_network_name = module.vnet.vnet_name
-  # delegations {
-  #   name = "Microsoft.Network.dnsResolvers"
-  #   service_delegation {
-  #     actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-  #     name    = "Microsoft.Network/dnsResolvers"
-  #   }
-  # }
-
-  depends_on = [
-    module.vnet,
-    module.network_security_group,
-    module.route_table,
-  ]
-}
 module "sa_names" {
   source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
   version = "~> 2.1"

@@ -25,7 +25,7 @@ variable "subscription_ids" {
   default     = []
 }
 
-variable "vnet_address_prefix" {
+variable "vnet_address_space" {
   description = "The address prefix for the virtual network. Use slash notation"
   type        = string
   default     = "10.53.0.0/16" # Default value for the virtual network address prefix, can be overridden
@@ -41,4 +41,27 @@ variable "storage_subnet_address_prefix" {
   description = "The address prefix for the storage subnet. Use slash notation"
   type        = string
   default     = "10.53.0.64/26"
+}
+
+variable "function_app_display_name" {
+  description = "The display_name of the Azure Function App"
+  type        = string
+  default     = "test-function-app"
+}
+
+variable "function_app_sku_name" {
+  description = "The SKU name for the Azure Function App"
+  type        = string
+  default     = "Y1"
+}
+variable "fa_storage_account" {
+  description = "Attributes for the storage account used by the function app"
+  type = object({
+    tier             = string
+    replication_type = string
+  })
+  default = {
+    tier             = "Standard"
+    replication_type = "LRS"
+  }
 }

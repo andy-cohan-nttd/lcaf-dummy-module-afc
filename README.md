@@ -135,7 +135,6 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_display_name"></a> [display\_name](#input\_display\_name) | Display name for the policy definition. | `string` | n/a | yes |
-| <a name="input_location"></a> [location](#input\_location) | The Azure region to deploy resources. | `string` | n/a | yes |
 | <a name="input_management_group"></a> [management\_group](#input\_management\_group) | Azure Management Group where the policy assignment will be created. | <pre>object({<br/>    id   = string<br/>    name = string<br/>  })</pre> | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | The name of the policy definition. | `string` | n/a | yes |
 | <a name="input_policy_mode"></a> [policy\_mode](#input\_policy\_mode) | The mode of the policy definition | `string` | `"Indexed"` | no |

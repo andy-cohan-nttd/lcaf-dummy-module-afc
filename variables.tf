@@ -14,10 +14,10 @@ variable "name" {
   type        = string
 }
 
-variable "location" {
-  description = "The Azure region to deploy resources."
-  type        = string
-}
+# variable "location" {
+#   description = "The Azure region to deploy resources."
+#   type        = string
+# }
 
 variable "display_name" {
   description = "Display name for the policy definition."
@@ -44,6 +44,7 @@ variable "policy_type" {
 
 variable "policy_mode" {
   description = "The mode of the policy definition"
+  type        = string
   default     = "Indexed"
   validation {
     condition = contains([

@@ -1,11 +1,13 @@
-module "vnet" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network/azurerm"
-  version = "~> 3.0"
+locals {
+  vnet_name = module.resource_names["vnet"].minimal_random_suffix
+}
 
+module "vnet" {
+  source              = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
   resource_group_name = module.resource_group.name
-  vnet_name           = module.resource_names["vnet"].minimal_random_suffix
+  vnet_name           = local.vnet_name
   vnet_location       = var.location
-  address_space       = [var.vnet_address_prefix]
+  address_space       = [var.vnet_address_space]
 }
 
 locals {
@@ -21,6 +23,54 @@ module "network_security_group" {
   name                = local.nsg_name
   resource_group_name = module.resource_group.name
   tags                = var.tags
+
+  # HTTP
+  security_rules = [
+    {
+      name                       = "AllowFunctionAppAccess"
+      priority                   = 100
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    },
+    # HTTPS
+    {
+      name                       = "AllowHTTPS"
+      priority                   = 110
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    },
+    # DNS
+    {
+      name                       = "AllowDNS"
+      priority                   = 120
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Udp"
+      source_port_range          = "*"
+      destination_port_range     = "53"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
+  ]
+  depends_on = [module.resource_group]
+}
+
+module "nsg_association" {
+  source                    = "terraform.registry.launch.nttdata.com/module_primitive/nsg_subnet_association/azurerm"
+  version                   = "~> 1.0"
+  subnet_id                 = module.outbound_dns_subnet.subnet.id
+  network_security_group_id = module.network_security_group.network_security_group_id
+  depends_on                = [module.resource_group]
 }
 
 module "route_table" {
@@ -31,6 +81,14 @@ module "route_table" {
   name                = local.route_table_name
   resource_group_name = module.resource_group.name
 }
+
+# module "rttbl_subnet_association" {
+#   source  = "terraform.registry.launch.nttdata.com/module_primitive/tf-azurerm-module_primitive-routetable_subnet_association/azurerm"
+#   version = "~> 1.0"
+
+#   route_table_id = module.route_table.id
+#   subnet_id      = module.outbound_dns_subnet.subnet.id
+# }
 
 module "outbound_dns_subnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
@@ -55,41 +113,51 @@ module "outbound_dns_subnet" {
 
   depends_on = [
     module.vnet,
+    #     module.network_security_group,
+    #     module.route_table,
+  ]
+}
+
+module "private_dns_resolver" {
+  # source  = "terraform.registry.launch.nttdata.com/module_primitive/private_dns_resolver/azurerm"
+  # version = "~> 1.0"
+  source = "../../../tf-azurerm-module_primitive-private_dns_resolver"
+
+  location               = var.location
+  name                   = module.resource_names["pdnsr"].standard
+  outbound_endpoint_name = module.resource_names["pdnsroep"].standard
+  resolver_link_name     = module.resource_names["pdnsrvnl"].standard
+  resource_group_name    = module.resource_group.name
+  ruleset_name           = module.resource_names["pdnsrfr"].standard
+  subnet_id              = module.outbound_dns_subnet.id
+  tags                   = var.tags
+  virtual_network_id     = module.vnet.vnet_id
+}
+
+module "storage_subnet" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
+  version = "~> 1.1"
+
+  address_prefix              = var.storage_subnet_address_prefix
+  name                        = module.resource_names["sn"].minimal_random_suffix
+  network_security_group_name = local.nsg_name
+  # private_endpoint_network_policies =
+  # private_link_service_network_policies_enabled = true
+  resource_group_name  = module.resource_group.name
+  route_table_name     = local.route_table_name
+  service_endpoints    = [] # TODO
+  virtual_network_name = module.vnet.vnet_name
+  # delegations {
+  #   name = "Microsoft.Network.dnsResolvers"
+  #   service_delegation {
+  #     actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+  #     name    = "Microsoft.Network/dnsResolvers"
+  #   }
+  # }
+
+  depends_on = [
+    module.vnet,
     module.network_security_group,
     module.route_table,
   ]
-}
-
-resource "azurerm_private_dns_resolver" "test" {
-  location            = var.location
-  name                = module.resource_names["pdnsr"].standard
-  resource_group_name = module.resource_group.name
-  virtual_network_id  = module.vnet.vnet_id
-}
-
-resource "azurerm_private_dns_resolver_outbound_endpoint" "test_ob" {
-  location                = azurerm_private_dns_resolver.test.location
-  name                    = module.resource_names["pdnsroep"].standard
-  private_dns_resolver_id = azurerm_private_dns_resolver.test.id
-  subnet_id               = module.outbound_dns_subnet.subnet.id
-  tags                    = var.tags
-}
-
-resource "azurerm_private_dns_resolver_dns_forwarding_ruleset" "ruleset1" {
-  name                = module.resource_names["pdnsrfr"].standard
-  resource_group_name = module.resource_group.name
-  location            = var.location
-  private_dns_resolver_outbound_endpoint_ids = [
-    azurerm_private_dns_resolver_outbound_endpoint.test_ob.id
-  ]
-  tags = var.tags
-}
-
-resource "azurerm_private_dns_resolver_virtual_network_link" "vnet_link" {
-  name                      = module.resource_names["pdnsrvnl"].standard
-  dns_forwarding_ruleset_id = azurerm_private_dns_resolver_dns_forwarding_ruleset.ruleset1.id
-  virtual_network_id        = module.vnet.vnet_id
-  # metadata = {
-  #   key = "value"
-  # }
 }

@@ -1,11 +1,7 @@
-locals {
-  resource_names = toset(["rg", "rt", "mgmtgrp", "policy", "vnet", "nsg", "sn", "pdnsr", "pdnsroep", "pdnsrfr", "pdnsrvnl"])
-  product_family = "pdnsadm"
-}
-
 module "resource_names" {
-  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
-  version = "~> 2.1"
+  # source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
+  # version = "~> 2.1"
+  source = "../../../../launchbynttdata/tf-launch-module_library-resource_name"
 
   for_each = local.resource_names
 
