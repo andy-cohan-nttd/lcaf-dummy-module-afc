@@ -1,8 +1,8 @@
 module "private_dns_policy" {
   source = "../../"
 
-  name = module.resource_names["policy"].standard
-  # location         = var.location
-  display_name     = "Private DNS Policies"
-  management_group = module.management_group.management_group
+  management_group    = module.management_group.management_group
+  policy_name         = module.resource_names["policy"].minimal_random_suffix
+  policy_display_name = "Private Endpoint DNS Policy"
+  # subnetId = module.outbound_dns_subnet.subnet.id
 }

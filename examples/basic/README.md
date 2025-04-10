@@ -1,5 +1,13 @@
 # basic
 
+This example creates a hub network with an outbound DNS resolver,
+and several subnets for a function app and storage account.
+
+The key test is of the polices which should:
+1) enforce the deployment into one of 2 allowed regions
+2) add any missing private endpoints to ensure the function app can access the storage account(s) across the private network.
+
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -40,6 +48,7 @@
 
 | Name | Type |
 |------|------|
+| [azurerm_private_dns_zone.dns_zone](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_zone) | resource |
 | [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
 
 ## Inputs

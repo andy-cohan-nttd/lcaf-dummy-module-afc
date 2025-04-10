@@ -9,27 +9,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-variable "name" {
-  description = "The name of the policy definition."
-  type        = string
-}
-
-# variable "location" {
-#   description = "The Azure region to deploy resources."
-#   type        = string
-# }
-
-variable "display_name" {
-  description = "Display name for the policy definition."
-  type        = string
-}
-
 variable "management_group" {
   description = "Azure Management Group where the policy assignment will be created."
   type = object({
     id   = string
     name = string
   })
+}
+
+variable "policy_name" {
+  type        = string
+  description = "The name of the policy definition."
+}
+
+variable "policy_display_name" {
+  type        = string
+  description = "The name of the policy definition."
 }
 
 variable "policy_type" {

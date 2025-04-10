@@ -161,3 +161,23 @@ module "storage_subnet" {
     module.route_table,
   ]
 }
+
+locals {
+  azure_private_zones = [
+    "afs.azure.net",
+    "blob.core.windows.net",
+    "dfs.core.windows.net",
+    "file.core.windows.net",
+    "queue.core.windows.net",
+    "table.core.windows.net",
+    "web.core.windows.net"
+  ]
+}
+
+resource "azurerm_private_dns_zone" "dns_zone" {
+  for_each            = toset(local.azure_private_zones)
+  name                = "privatelink.${each.value}"
+  resource_group_name = module.resource_group.name
+
+  depends_on = [module.resource_group]
+}
