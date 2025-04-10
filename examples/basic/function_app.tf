@@ -1,19 +1,3 @@
-# resource "azurerm_private_endpoint" "private_endpoint" {
-#   location            = var.location
-#   name                = "function-app-private-endpoint"
-#   resource_group_name = module.resource_group.name
-#   subnet_id           = module.fa_subnet.id
-
-#   private_service_connection {
-#     is_manual_connection           = false
-#     name                           = "functionAppConnection"
-#     private_connection_resource_id = module.function_app.function_app_id
-#     subresource_names              = ["sites"]
-
-#   }
-
-#   depends_on = [module.resource_group]
-# }
 # resource "azurerm_private_dns_zone" "dns_zone" {
 #   name                = "privatelink.azurewebsites.net"
 #   resource_group_name = module.resource_group.name
@@ -40,69 +24,69 @@
 #   depends_on = [module.resource_group]
 # }
 
-locals {
-  service_plan_name    = module.resource_names["sp"].standard
-  storage_account_name = module.resource_names["sa"].dns_compliant_minimal_random_suffix
-}
+# locals {
+#   service_plan_name    = module.resource_names["sp"].standard
+#   storage_account_name = module.resource_names["sa"].dns_compliant_minimal_random_suffix
+# }
 
-module "fa_storage_account" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm"
-  version = "~> 1.0"
+# module "fa_storage_account" {
+#   source  = "terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm"
+#   version = "~> 1.0"
 
-  storage_account_name = local.storage_account_name
-  resource_group_name  = module.resource_group.name
+#   storage_account_name = local.storage_account_name
+#   resource_group_name  = module.resource_group.name
 
-  location = var.location
+#   location = var.location
 
-  account_tier             = var.fa_storage_account.tier
-  account_replication_type = var.fa_storage_account.replication_type
+#   account_tier             = var.fa_storage_account.tier
+#   account_replication_type = var.fa_storage_account.replication_type
 
-  tags = merge(var.tags, { resource_name = local.storage_account_name })
+#   tags = merge(var.tags, { resource_name = local.storage_account_name })
 
-  depends_on = [module.resource_group]
-}
+#   depends_on = [module.resource_group]
+# }
 
-module "app_service_plan" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/app_service_plan/azurerm"
-  # version = "~> 1.0"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-app_service_plan"
+# module "app_service_plan" {
+#   # source  = "terraform.registry.launch.nttdata.com/module_primitive/app_service_plan/azurerm"
+#   # version = "~> 1.0"
+#   source = "../../../../launchbynttdata/tf-azurerm-module_primitive-app_service_plan"
 
-  name                = local.service_plan_name
-  resource_group_name = module.resource_group.name
+#   name                = local.service_plan_name
+#   resource_group_name = module.resource_group.name
 
-  os_type = "Linux"
+#   os_type = "Linux"
 
-  location = var.location
-  sku_name = var.function_app_sku_name
+#   location = var.location
+#   sku_name = var.function_app_sku_name
 
-  tags = merge(var.tags, { resource_name = module.resource_names["sp"].standard })
+#   tags = merge(var.tags, { resource_name = module.resource_names["sp"].standard })
 
-  depends_on = [module.resource_group]
-}
+#   depends_on = [module.resource_group]
+# }
 
-module "function_app" {
-  source = "../../../../andy-cohan-nttd/tf-azurerm-module_primitive-linux_function_app"
+# module "function_app" {
+#   source = "../../../../andy-cohan-nttd/tf-azurerm-module_primitive-linux_function_app"
 
-  name                = module.resource_names["fa"].dns_compliant_minimal_random_suffix
-  identity_name       = module.resource_names["fa"].dns_compliant_minimal_random_suffix
-  location            = var.location
-  resource_group_name = module.resource_group.name
-  service_plan_id     = module.app_service_plan.id
-  storage_account = {
-    name       = local.storage_account_name
-    access_key = module.fa_storage_account.primary_access_key
-  }
+#   name                = module.resource_names["fa"].dns_compliant_minimal_random_suffix
+#   identity_name       = module.resource_names["fa"].dns_compliant_minimal_random_suffix
+#   location            = var.location
+#   resource_group_name = module.resource_group.name
+#   service_plan_id     = module.app_service_plan.id
+#   storage_account = {
+#     name       = local.storage_account_name
+#     access_key = module.fa_storage_account.primary_access_key
+#   }
 
-  depends_on = [module.resource_group, module.fa_storage_account, module.app_service_plan]
-}
+#   depends_on = [module.resource_group, module.fa_storage_account, module.app_service_plan]
+# }
 
-module "role_assignment" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/role_assignment/azurerm"
-  # version = "~> 1.0"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-role_assignment"
+# module "role_assignment" {
+#   # source  = "terraform.registry.launch.nttdata.com/module_primitive/role_assignment/azurerm"
+#   # version = "~> 1.0"
+#   source = "../../../../launchbynttdata/tf-azurerm-module_primitive-role_assignment"
 
-  scope                = module.fa_storage_account.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = module.function_app.principal_id
-  depends_on           = [module.function_app]
-}
+#   scope                = module.fa_storage_account.id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = module.function_app.principal_id
+#   depends_on           = [module.function_app]
+# }

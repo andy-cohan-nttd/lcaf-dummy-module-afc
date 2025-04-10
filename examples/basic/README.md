@@ -26,9 +26,6 @@ The key test is of the polices which should:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_app_service_plan"></a> [app\_service\_plan](#module\_app\_service\_plan) | ../../../../launchbynttdata/tf-azurerm-module_primitive-app_service_plan | n/a |
-| <a name="module_fa_storage_account"></a> [fa\_storage\_account](#module\_fa\_storage\_account) | terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm | ~> 1.0 |
-| <a name="module_function_app"></a> [function\_app](#module\_function\_app) | ../../../../andy-cohan-nttd/tf-azurerm-module_primitive-linux_function_app | n/a |
 | <a name="module_management_group"></a> [management\_group](#module\_management\_group) | ../../../../launchbynttdata/tf-azurerm-module_primitive-management_group | n/a |
 | <a name="module_network_security_group"></a> [network\_security\_group](#module\_network\_security\_group) | terraform.registry.launch.nttdata.com/module_primitive/network_security_group/azurerm | ~> 1.0 |
 | <a name="module_nsg_association"></a> [nsg\_association](#module\_nsg\_association) | terraform.registry.launch.nttdata.com/module_primitive/nsg_subnet_association/azurerm | ~> 1.0 |
@@ -37,10 +34,10 @@ The key test is of the polices which should:
 | <a name="module_private_dns_resolver"></a> [private\_dns\_resolver](#module\_private\_dns\_resolver) | ../../../tf-azurerm-module_primitive-private_dns_resolver | n/a |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.0 |
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | ../../../../launchbynttdata/tf-launch-module_library-resource_name | n/a |
-| <a name="module_role_assignment"></a> [role\_assignment](#module\_role\_assignment) | ../../../../launchbynttdata/tf-azurerm-module_primitive-role_assignment | n/a |
 | <a name="module_route_table"></a> [route\_table](#module\_route\_table) | terraform.registry.launch.nttdata.com/module_primitive/route_table/azurerm | ~> 1.0 |
 | <a name="module_sa_names"></a> [sa\_names](#module\_sa\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.1 |
-| <a name="module_storage_account"></a> [storage\_account](#module\_storage\_account) | terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm | ~> 1.3 |
+| <a name="module_storage_account"></a> [storage\_account](#module\_storage\_account) | ../../../../launchbynttdata/tf-azurerm-module_primitive-storage_account | n/a |
+| <a name="module_storage_private_endpoint"></a> [storage\_private\_endpoint](#module\_storage\_private\_endpoint) | ../../../../launchbynttdata/tf-azurerm-module_primitive-private_endpoint | n/a |
 | <a name="module_storage_subnet"></a> [storage\_subnet](#module\_storage\_subnet) | terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm | ~> 1.1 |
 | <a name="module_vnet"></a> [vnet](#module\_vnet) | ../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network | n/a |
 

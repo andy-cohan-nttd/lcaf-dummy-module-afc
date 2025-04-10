@@ -13,8 +13,9 @@ module "sa_names" {
 }
 
 module "storage_account" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm"
-  version = "~> 1.3"
+  # source  = "terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm"
+  # version = "~> 1.3"
+  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-storage_account"
 
   location                      = var.location
   public_network_access_enabled = false
@@ -38,15 +39,29 @@ module "storage_account" {
   # blob_last_access_time_enabled          = var.blob_last_access_time_enabled
   # blob_container_delete_retention_policy = var.blob_container_delete_retention_policy
   network_rules = {
-    virtual_network_subnet_id = module.storage_subnet.id
-    # default_action             = optional(string, "Deny")
-    # bypass                     = optional(list(string), ["AzureServices", "Logging", "Metrics"])
-    # ip_rules                   = optional(list(string), [])
-    # virtual_network_subnet_ids = optional(list(string), [])
-    # private_link_access = optional(list(object({
-    #   endpoint_resource_id = string
-    #   endpoint_tenant_id   = optional(string, null)
-    # })), [])
+    virtual_network_subnet_ids = [module.storage_subnet.id]
+    # private_link_access = [
+    #   {
+    #     endpoint_resource_id = "TODO"
+    #   }
+    # ]
+  }
+
+  depends_on = [module.resource_group]
+}
+
+module "storage_private_endpoint" {
+  source              = "../../../../launchbynttdata/tf-azurerm-module_primitive-private_endpoint"
+  location            = var.location
+  name                = "function-app-private-endpoint"
+  resource_group_name = module.resource_group.name
+  subnet_id           = module.storage_subnet.id
+
+  private_service_connection = {
+    is_manual_connection           = false
+    name                           = "TODO"
+    private_connection_resource_id = module.storage_account.id
+    subresource_names              = ["blob"] # TODO
   }
 
   depends_on = [module.resource_group]
