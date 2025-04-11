@@ -26,12 +26,21 @@ data "azurerm_client_config" "current" {
   # This data source is used to get the current Azure client configuration
 }
 
-module "management_group" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/management_group/azurerm"
-  # version = "~> 1.0"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-management_group" # Use the local path for testing
+# module "management_group" {
+#   # source  = "terraform.registry.launch.nttdata.com/module_primitive/management_group/azurerm"
+#   # version = "~> 1.0"
+#   source = "../../../../launchbynttdata/tf-azurerm-module_primitive-management_group" # Use the local path for testing
 
-  name             = module.resource_names["mgmtgrp"].standard
-  display_name     = "Management Group for PDNS Policy"
-  subscription_ids = [data.azurerm_client_config.current.subscription_id] # Use the current subscription for the management group
-}
+#   name             = module.resource_names["mgmtgrp"].standard
+#   display_name     = "Management Group for PDNS Policy"
+#   subscription_ids = [data.azurerm_client_config.current.subscription_id] # Use the current subscription for the management group
+# }
+
+# module "private_dns_policy" {
+#   source = "../../"
+
+#   management_group    = module.management_group.management_group
+#   policy_name         = module.resource_names["policy"].minimal_random_suffix
+#   policy_display_name = "Private Endpoint DNS Policy"
+#   # subnetId = module.outbound_dns_subnet.subnet.id
+# }

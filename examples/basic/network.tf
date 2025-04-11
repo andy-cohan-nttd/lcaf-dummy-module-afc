@@ -1,18 +1,19 @@
 locals {
-  vnet_name = module.resource_names["vnet"].minimal_random_suffix
+  hub_vnet_name   = module.resource_names["vneth"].minimal_random_suffix
+  spoke_vnet_name = module.resource_names["vnets"].minimal_random_suffix
 }
 
-module "vnet" {
+module "hub_vnet" {
   source              = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
   resource_group_name = module.resource_group.name
-  vnet_name           = local.vnet_name
+  vnet_name           = local.hub_vnet_name
   vnet_location       = var.location
-  address_space       = [var.vnet_address_space]
+  address_space       = [var.hub_vnet_address_space]
 }
 
 locals {
-  nsg_name         = module.resource_names["nsg"].minimal_random_suffix
-  route_table_name = module.resource_names["rt"].minimal_random_suffix
+  nsg_name = module.resource_names["nsg"].minimal_random_suffix
+  # route_table_name = module.resource_names["rt"].minimal_random_suffix
 }
 
 module "network_security_group" {
@@ -65,22 +66,23 @@ module "network_security_group" {
   depends_on = [module.resource_group]
 }
 
-module "nsg_association" {
-  source                    = "terraform.registry.launch.nttdata.com/module_primitive/nsg_subnet_association/azurerm"
-  version                   = "~> 1.0"
-  subnet_id                 = module.outbound_dns_subnet.subnet.id
-  network_security_group_id = module.network_security_group.network_security_group_id
-  depends_on                = [module.resource_group]
-}
+# module "nsg_association" {
+#   # source                    = "terraform.registry.launch.nttdata.com/module_primitive/nsg_subnet_association/azurerm"
+#   # version                   = "~> 1.0"
+#   source                    = "../../../../launchbynttdata/tf-azurerm-module_primitive-nsg_subnet_association"
+#   subnet_id                 = module.outbound_dns_subnet.subnet.id
+#   network_security_group_id = module.network_security_group.network_security_group_id
+#   depends_on                = [module.resource_group]
+# }
 
-module "route_table" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/route_table/azurerm"
-  version = "~> 1.0"
+# module "route_table" {
+#   source  = "terraform.registry.launch.nttdata.com/module_primitive/route_table/azurerm"
+#   version = "~> 1.0"
 
-  location            = var.location
-  name                = local.route_table_name
-  resource_group_name = module.resource_group.name
-}
+#   location            = var.location
+#   name                = local.route_table_name
+#   resource_group_name = module.resource_group.name
+# }
 
 # module "rttbl_subnet_association" {
 #   source  = "terraform.registry.launch.nttdata.com/module_primitive/tf-azurerm-module_primitive-routetable_subnet_association/azurerm"
@@ -94,26 +96,21 @@ module "outbound_dns_subnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
   version = "~> 1.1"
 
-  address_prefix              = var.outbound_dns_subnet_address_prefix
+  address_prefix              = var.outbound_dns_subnet_address_space
   name                        = module.resource_names["sn"].standard
   network_security_group_name = local.nsg_name
-  # private_endpoint_network_policies =
-  # private_link_service_network_policies_enabled = true
-  resource_group_name  = module.resource_group.name
-  route_table_name     = local.route_table_name
-  service_endpoints    = [] # TODO
-  virtual_network_name = module.vnet.vnet_name
-  # delegations {
-  #   name = "Microsoft.Network.dnsResolvers"
-  #   service_delegation {
-  #     actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-  #     name    = "Microsoft.Network/dnsResolvers"
-  #   }
-  # }
+  resource_group_name         = module.resource_group.name
+  virtual_network_name        = local.hub_vnet_name
+  delegations = {
+    outbound_dns_resolver = {
+      service_name    = "Microsoft.Network/dnsResolvers"
+      service_actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
 
   depends_on = [
-    module.vnet,
-    #     module.network_security_group,
+    module.hub_vnet,
+    module.network_security_group,
     #     module.route_table,
   ]
 }
@@ -131,34 +128,32 @@ module "private_dns_resolver" {
   ruleset_name           = module.resource_names["pdnsrfr"].standard
   subnet_id              = module.outbound_dns_subnet.id
   tags                   = var.tags
-  virtual_network_id     = module.vnet.vnet_id
+  virtual_network_id     = module.hub_vnet.vnet_id
+}
+
+module "spoke_vnet" {
+  source              = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
+  resource_group_name = module.resource_group.name
+  vnet_name           = local.spoke_vnet_name
+  vnet_location       = var.location
+  address_space       = [var.spoke_vnet_address_space]
 }
 
 module "storage_subnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
   version = "~> 1.1"
 
-  address_prefix              = var.storage_subnet_address_prefix
+  address_prefix              = var.storage_subnet_address_space
   name                        = module.resource_names["sn"].minimal_random_suffix
   network_security_group_name = local.nsg_name
-  # private_endpoint_network_policies =
-  # private_link_service_network_policies_enabled = true
-  resource_group_name  = module.resource_group.name
-  route_table_name     = local.route_table_name
-  service_endpoints    = [] # TODO
-  virtual_network_name = module.vnet.vnet_name
-  # delegations {
-  #   name = "Microsoft.Network.dnsResolvers"
-  #   service_delegation {
-  #     actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-  #     name    = "Microsoft.Network/dnsResolvers"
-  #   }
-  # }
+  resource_group_name         = module.resource_group.name
+  service_endpoints           = ["Microsoft.Storage"]
+  virtual_network_name        = local.spoke_vnet_name
 
   depends_on = [
-    module.vnet,
+    module.spoke_vnet,
     module.network_security_group,
-    module.route_table,
+    # module.route_table,
   ]
 }
 
@@ -180,4 +175,45 @@ resource "azurerm_private_dns_zone" "dns_zone" {
   resource_group_name = module.resource_group.name
 
   depends_on = [module.resource_group]
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_vnet_link" {
+  for_each              = toset(local.azure_private_zones)
+  name                  = module.resource_names["pdzvnl"].minimal_random_suffix # "privatelink.${each.value}"
+  resource_group_name   = module.resource_group.name
+  private_dns_zone_name = "privatelink.${each.value}"
+  virtual_network_id    = module.hub_vnet.vnet_id
+  depends_on = [
+    azurerm_private_dns_zone.dns_zone
+  ]
+}
+
+module "peer_hub_vnet_to_spoke_vnet" {
+  # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+  # version = "~> 1.0"
+  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
+
+  peering_name                 = "peer${local.hub_vnet_name}_to_${local.spoke_vnet_name}"
+  resource_group_name          = module.resource_group.name
+  virtual_network_name         = local.hub_vnet_name
+  remote_virtual_network_id    = module.spoke_vnet.vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+module "peer_spoke_vnet_to_hub_vnet" {
+  # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+  # version = "~> 1.0"
+  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
+
+  peering_name                 = "peer${local.spoke_vnet_name}_to_${local.hub_vnet_name}"
+  resource_group_name          = module.resource_group.name
+  virtual_network_name         = local.spoke_vnet_name
+  remote_virtual_network_id    = module.hub_vnet.vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
 }

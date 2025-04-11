@@ -12,6 +12,7 @@ locals {
     "pdnsrfr",
     "pdnsroep",
     "pdnsrvnl",
+    "pdzvnl",
     "pip",
     "policy",
     "rg",
@@ -19,7 +20,9 @@ locals {
     "sa",
     "sn",
     "sp",
-    "vnet",
+    "vm",
+    "vneth",
+    "vnets",
   ])
   product_family = "pdnsadm"
 }
