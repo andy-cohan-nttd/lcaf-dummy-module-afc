@@ -76,5 +76,5 @@ variable "storage_subnet_address_space" {
 variable "ssh_public_key_path" {
   description = "Path to the SSH public key for VM access"
   type        = string
-  default     = "id_lcaf.pub"
+  default     = "~/.ssh/id_lcaf.pub"
 }
