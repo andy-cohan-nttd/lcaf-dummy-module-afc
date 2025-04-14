@@ -9,6 +9,7 @@ module "hub_vnet" {
   vnet_name           = local.hub_vnet_name
   vnet_location       = var.location
   address_space       = [var.hub_vnet_address_space]
+  depends_on          = [module.resource_group]
 }
 
 locals {
@@ -137,6 +138,7 @@ module "spoke_vnet" {
   vnet_name           = local.spoke_vnet_name
   vnet_location       = var.location
   address_space       = [var.spoke_vnet_address_space]
+  depends_on          = [module.resource_group]
 }
 
 module "storage_subnet" {
@@ -201,6 +203,7 @@ module "peer_hub_vnet_to_spoke_vnet" {
   allow_forwarded_traffic      = true
   allow_gateway_transit        = false
   use_remote_gateways          = false
+  depends_on                   = [module.hub_vnet, module.spoke_vnet]
 }
 
 module "peer_spoke_vnet_to_hub_vnet" {
@@ -216,4 +219,5 @@ module "peer_spoke_vnet_to_hub_vnet" {
   allow_forwarded_traffic      = true
   allow_gateway_transit        = false
   use_remote_gateways          = false
+  depends_on                   = [module.hub_vnet, module.spoke_vnet]
 }
