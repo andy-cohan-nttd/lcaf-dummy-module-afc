@@ -27,10 +27,12 @@ The key test is of the polices which should:
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_hub_vnet"></a> [hub\_vnet](#module\_hub\_vnet) | ../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network | n/a |
+| <a name="module_management_group"></a> [management\_group](#module\_management\_group) | ../../../../launchbynttdata/tf-azurerm-module_primitive-management_group | n/a |
 | <a name="module_network_security_group"></a> [network\_security\_group](#module\_network\_security\_group) | terraform.registry.launch.nttdata.com/module_primitive/network_security_group/azurerm | ~> 1.0 |
 | <a name="module_outbound_dns_subnet"></a> [outbound\_dns\_subnet](#module\_outbound\_dns\_subnet) | terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm | ~> 1.1 |
 | <a name="module_peer_hub_vnet_to_spoke_vnet"></a> [peer\_hub\_vnet\_to\_spoke\_vnet](#module\_peer\_hub\_vnet\_to\_spoke\_vnet) | ../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering | n/a |
 | <a name="module_peer_spoke_vnet_to_hub_vnet"></a> [peer\_spoke\_vnet\_to\_hub\_vnet](#module\_peer\_spoke\_vnet\_to\_hub\_vnet) | ../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering | n/a |
+| <a name="module_private_dns_policy"></a> [private\_dns\_policy](#module\_private\_dns\_policy) | ../../ | n/a |
 | <a name="module_private_dns_resolver"></a> [private\_dns\_resolver](#module\_private\_dns\_resolver) | ../../../tf-azurerm-module_primitive-private_dns_resolver | n/a |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.0 |
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | ../../../../launchbynttdata/tf-launch-module_library-resource_name | n/a |

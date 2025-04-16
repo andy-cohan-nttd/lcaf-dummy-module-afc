@@ -1,17 +1,3 @@
-module "sa_names" {
-  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
-  version = "~> 2.1"
-
-  for_each = toset(["sa"])
-
-  logical_product_family  = local.product_family
-  logical_product_service = "test"
-  region                  = var.location
-  class_env               = var.environment
-  cloud_resource_type     = each.value
-  maximum_length          = 24
-}
-
 module "storage_account" {
   # source  = "terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm"
   # version = "~> 1.3"

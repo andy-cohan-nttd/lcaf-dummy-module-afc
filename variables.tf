@@ -56,3 +56,24 @@ variable "policy_mode" {
     error_message = "The policy_mode must be either 'Indexed' or 'All'."
   }
 }
+
+variable "private_dns_zones" {
+  description = "The names of the private DNS zones to be monitored."
+  type        = set(string)
+  default     = []
+}
+
+variable "deployment_identity_name" {
+  description = "The name of the deployment identity"
+  type        = string
+}
+
+variable "resource_group_name" {
+  description = "The name of the resource group where the deployment identity will be created."
+  type        = string
+}
+
+variable "location" {
+  description = "The Azure region where the resources will be created."
+  type        = string
+}

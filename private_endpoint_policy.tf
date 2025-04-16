@@ -1,10 +1,11 @@
 # when a contributor creates a private endpoint
 # the policy will automatically register it with the centralized zone
 resource "azurerm_policy_definition" "private_endpoint" {
-  name         = var.policy_name
-  policy_type  = var.policy_type
-  mode         = var.policy_mode
-  display_name = var.policy_display_name
+  name                = var.policy_name
+  policy_type         = var.policy_type
+  mode                = var.policy_mode
+  display_name        = var.policy_display_name
+  management_group_id = var.management_group.id
 
   metadata = <<METADATA
     {
@@ -21,7 +22,19 @@ METADATA
         }
       }
     }
-PARAMETERS
+  PARAMETERS
+
+  # policy_rule = <<POLICY_RULE
+  # {
+  #   "if": {
+  #     "field": "type",
+  #     "equals": "Microsoft.Network/privateEndpoints"
+  #   },
+  #   "then": {
+  #     "effect": "audit"
+  #   }
+  # }
+  # POLICY_RULE
 
   policy_rule = <<POLICY_RULE
     {
@@ -81,12 +94,36 @@ PARAMETERS
         }
       }
     }
-POLICY_RULE
+  POLICY_RULE
 
 }
 
+resource "azurerm_user_assigned_identity" "auto_deploy_identity" {
+  name                = var.deployment_identity_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+}
+
 resource "azurerm_management_group_policy_assignment" "private_endpoint" {
-  name                 = "${var.policy_name}-assign"
+  for_each = var.private_dns_zones
+
+  name                 = substr("${substr(each.key, 0, 8)}.${var.policy_name}", 0, 24)
   policy_definition_id = azurerm_policy_definition.private_endpoint.id
   management_group_id  = var.management_group.id
+  description          = "Private Endpoint DNS Policy Assignment for ${each.key}"
+  display_name         = "${var.policy_display_name} - ${each.key}"
+  enforce              = false
+  parameters           = <<PARAMETERS
+    {
+      "privateDnsZoneName": {
+        "value": "privatelink.${each.key}"
+      }
+    }
+PARAMETERS
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.auto_deploy_identity.id]
+  }
+  location = var.location
 }
