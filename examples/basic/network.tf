@@ -1,19 +1,7 @@
 locals {
   hub_vnet_name   = module.resource_names["vneth"].minimal_random_suffix
+  nsg_name        = module.resource_names["nsg"].minimal_random_suffix
   spoke_vnet_name = module.resource_names["vnets"].minimal_random_suffix
-}
-
-module "hub_vnet" {
-  source              = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
-  resource_group_name = module.resource_group.name
-  vnet_name           = local.hub_vnet_name
-  vnet_location       = var.location
-  address_space       = [var.hub_vnet_address_space]
-  depends_on          = [module.resource_group]
-}
-
-locals {
-  nsg_name = module.resource_names["nsg"].minimal_random_suffix
   # route_table_name = module.resource_names["rt"].minimal_random_suffix
 }
 
@@ -67,14 +55,15 @@ module "network_security_group" {
   depends_on = [module.resource_group]
 }
 
-# module "nsg_association" {
-#   # source                    = "terraform.registry.launch.nttdata.com/module_primitive/nsg_subnet_association/azurerm"
-#   # version                   = "~> 1.0"
-#   source                    = "../../../../launchbynttdata/tf-azurerm-module_primitive-nsg_subnet_association"
-#   subnet_id                 = module.outbound_dns_subnet.subnet.id
-#   network_security_group_id = module.network_security_group.network_security_group_id
-#   depends_on                = [module.resource_group]
-# }
+module "hub_vnet" {
+  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
+
+  address_space       = [var.hub_vnet_address_space]
+  resource_group_name = module.resource_group.name
+  vnet_location       = var.location
+  vnet_name           = local.hub_vnet_name
+  # depends_on          = [module.resource_group, module.network_security_group]
+}
 
 # module "route_table" {
 #   source  = "terraform.registry.launch.nttdata.com/module_primitive/route_table/azurerm"
@@ -92,14 +81,36 @@ module "network_security_group" {
 #   route_table_id = module.route_table.id
 #   subnet_id      = module.outbound_dns_subnet.subnet.id
 # }
+module "inbound_dns_subnet" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
+  version = "~> 1.1"
+
+  address_prefix              = var.inbound_dns_subnet_address_space
+  name                        = module.resource_names["ibsn"].standard
+  network_security_group_id   = module.network_security_group.network_security_group_id
+  network_security_group_name = local.nsg_name
+  resource_group_name         = module.resource_group.name
+  virtual_network_name        = local.hub_vnet_name
+  delegations = {
+    inbound_dns_resolver = {
+      service_name    = "Microsoft.Network/dnsResolvers"
+      service_actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
+  depends_on = [
+    module.hub_vnet,
+    module.network_security_group
+  ]
+}
 
 module "outbound_dns_subnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
   version = "~> 1.1"
 
   address_prefix              = var.outbound_dns_subnet_address_space
-  name                        = module.resource_names["sn"].standard
+  name                        = module.resource_names["obsn"].standard
   network_security_group_name = local.nsg_name
+  network_security_group_id   = module.network_security_group.network_security_group_id
   resource_group_name         = module.resource_group.name
   virtual_network_name        = local.hub_vnet_name
   delegations = {
@@ -116,29 +127,14 @@ module "outbound_dns_subnet" {
   ]
 }
 
-module "private_dns_resolver" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/private_dns_resolver/azurerm"
-  # version = "~> 1.0"
-  source = "../../../tf-azurerm-module_primitive-private_dns_resolver"
-
-  location               = var.location
-  name                   = module.resource_names["pdnsr"].standard
-  outbound_endpoint_name = module.resource_names["pdnsroep"].standard
-  resolver_link_name     = module.resource_names["pdnsrvnl"].standard
-  resource_group_name    = module.resource_group.name
-  ruleset_name           = module.resource_names["pdnsrfr"].standard
-  subnet_id              = module.outbound_dns_subnet.id
-  tags                   = var.tags
-  virtual_network_id     = module.hub_vnet.vnet_id
-}
-
 module "spoke_vnet" {
-  source              = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
-  resource_group_name = module.resource_group.name
-  vnet_name           = local.spoke_vnet_name
-  vnet_location       = var.location
+  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
+
   address_space       = [var.spoke_vnet_address_space]
-  depends_on          = [module.resource_group]
+  resource_group_name = module.resource_group.name
+  vnet_location       = var.location
+  vnet_name           = local.spoke_vnet_name
+  depends_on          = [module.resource_group, module.network_security_group]
 }
 
 module "storage_subnet" {
@@ -146,7 +142,7 @@ module "storage_subnet" {
   version = "~> 1.1"
 
   address_prefix              = var.storage_subnet_address_space
-  name                        = module.resource_names["sn"].minimal_random_suffix
+  name                        = module.resource_names["stsn"].minimal_random_suffix
   network_security_group_name = local.nsg_name
   resource_group_name         = module.resource_group.name
   service_endpoints           = ["Microsoft.Storage"]
@@ -157,24 +153,6 @@ module "storage_subnet" {
     module.network_security_group,
     # module.route_table,
   ]
-}
-
-resource "azurerm_private_dns_zone" "dns_zone" {
-  for_each = toset(local.azure_private_zones)
-
-  name                = "privatelink.${each.value}"
-  resource_group_name = module.resource_group.name
-  depends_on          = [module.resource_group]
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_vnet_link" {
-  for_each = toset(local.azure_private_zones)
-
-  name                  = module.resource_names["pdzvnl"].minimal_random_suffix # "privatelink.${each.value}"
-  resource_group_name   = module.resource_group.name
-  private_dns_zone_name = "privatelink.${each.value}"
-  virtual_network_id    = module.hub_vnet.vnet_id
-  depends_on            = [azurerm_private_dns_zone.dns_zone]
 }
 
 module "peer_hub_vnet_to_spoke_vnet" {

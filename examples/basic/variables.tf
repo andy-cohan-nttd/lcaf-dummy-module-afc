@@ -31,6 +31,12 @@ variable "hub_vnet_address_space" {
   default     = "10.53.0.0/16" # Default value for the virtual network address prefix, can be overridden
 }
 
+variable "inbound_dns_subnet_address_space" {
+  description = "The address prefix for the inbound DNS subnet. Use slash notation"
+  type        = string
+  default     = "10.53.0.64/26"
+}
+
 variable "outbound_dns_subnet_address_space" {
   description = "The address prefix for the outbound DNS subnet. Use slash notation"
   type        = string

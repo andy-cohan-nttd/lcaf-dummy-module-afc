@@ -104,26 +104,32 @@ resource "azurerm_user_assigned_identity" "auto_deploy_identity" {
   location            = var.location
 }
 
-resource "azurerm_management_group_policy_assignment" "private_endpoint" {
-  for_each = var.private_dns_zones
-
-  name                 = substr("${substr(each.key, 0, 8)}.${var.policy_name}", 0, 24)
-  policy_definition_id = azurerm_policy_definition.private_endpoint.id
-  management_group_id  = var.management_group.id
-  description          = "Private Endpoint DNS Policy Assignment for ${each.key}"
-  display_name         = "${var.policy_display_name} - ${each.key}"
-  enforce              = false
-  parameters           = <<PARAMETERS
-    {
-      "privateDnsZoneName": {
-        "value": "privatelink.${each.key}"
-      }
-    }
-PARAMETERS
-
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.auto_deploy_identity.id]
-  }
-  location = var.location
+locals {
+  zones = jsonencode(tolist(var.private_dns_zones))
 }
+
+# resource "azurerm_management_group_policy_assignment" "private_endpoint" {
+#   # for_each = var.private_dns_zones
+
+#   # name                 = substr("${substr(each.key, 1, 8)}.${var.policy_name}", 0, 24)
+#   name                 = var.policy_name
+#   policy_definition_id = azurerm_policy_definition.private_endpoint.id
+#   management_group_id  = var.management_group.id
+#   # description          = "Private Endpoint DNS Policy Assignment for ${each.key}"
+#   description  = "Private Endpoint DNS Policy Assignment"
+#   display_name = var.policy_display_name
+#   enforce      = false
+#   parameters   = <<PARAMETERS
+#     {
+#       "privateDnsZoneName": {
+#         "value": "privatelink.${jsonencode(tolist(var.private_dns_zones))}"
+#       }
+#     }
+# PARAMETERS
+
+#   identity {
+#     type         = "UserAssigned"
+#     identity_ids = [azurerm_user_assigned_identity.auto_deploy_identity.id]
+#   }
+#   location = var.location
+# }
