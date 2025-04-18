@@ -1,7 +1,7 @@
 locals {
-  hub_vnet_name   = module.resource_names["vneth"].minimal_random_suffix
+  hub_vnet_name   = module.resource_names["hvnet"].minimal
+  spoke_vnet_name = module.resource_names["svnet"].minimal
   nsg_name        = module.resource_names["nsg"].minimal_random_suffix
-  spoke_vnet_name = module.resource_names["vnets"].minimal_random_suffix
   # route_table_name = module.resource_names["rt"].minimal_random_suffix
 }
 
@@ -62,7 +62,7 @@ module "hub_vnet" {
   resource_group_name = module.resource_group.name
   vnet_location       = var.location
   vnet_name           = local.hub_vnet_name
-  # depends_on          = [module.resource_group, module.network_security_group]
+  depends_on          = [module.resource_group, module.network_security_group]
 }
 
 # module "route_table" {
@@ -142,7 +142,7 @@ module "storage_subnet" {
   version = "~> 1.1"
 
   address_prefix              = var.storage_subnet_address_space
-  name                        = module.resource_names["stsn"].minimal_random_suffix
+  name                        = module.resource_names["stsn"].standard
   network_security_group_name = local.nsg_name
   resource_group_name         = module.resource_group.name
   service_endpoints           = ["Microsoft.Storage"]

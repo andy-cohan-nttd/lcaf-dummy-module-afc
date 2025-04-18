@@ -2,6 +2,12 @@ locals {
   storage_account_name = module.resource_names["sa"].recommended_per_length_restriction
 }
 
+data "azurerm_subnet" "storage_subnet" {
+  name                 = var.storage_subnet.subnet_name
+  virtual_network_name = var.storage_subnet.vnet_name
+  resource_group_name  = var.storage_subnet.resource_group
+}
+
 module "storage_account" {
   # source  = "terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm"
   # version = "~> 1.3"
@@ -13,7 +19,7 @@ module "storage_account" {
   resource_group_name           = module.resource_group.name
   storage_account_name          = local.storage_account_name
   network_rules = {
-    virtual_network_subnet_ids = [module.storage_subnet.id]
+    virtual_network_subnet_ids = [data.azurerm_subnet.storage_subnet.id]
     # private_link_access = [
     #   {
     #     endpoint_resource_id = "TODO"
@@ -28,7 +34,7 @@ module "storage_private_endpoint" {
   location            = var.location
   name                = module.resource_names["stpe"].standard
   resource_group_name = module.resource_group.name
-  subnet_id           = module.storage_subnet.id
+  subnet_id           = data.azurerm_subnet.storage_subnet.id
 
   private_service_connection = {
     is_manual_connection           = false

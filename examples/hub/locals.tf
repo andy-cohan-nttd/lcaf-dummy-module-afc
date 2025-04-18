@@ -5,8 +5,6 @@ locals {
     "fa",
     "fp",
     "fprcgn",
-    "hubvnet",
-    "hubvnip",
     "mgmtgrp",
     "nsg",
     "pdnsr",
@@ -20,17 +18,14 @@ locals {
     "policy",
     "rg",
     "rt",
-    "sa",
     "ibsn",
     "obsn",
     "stpe",
     "stsn",
     "sp",
-    "vm",
-    "vneth",
-    "vnets",
+    "hvnet",
+    "svnet",
   ])
-  product_family = "pdnsadm"
 
   azure_private_zones = [
     "afs.azure.net",
@@ -41,4 +36,5 @@ locals {
     "table.core.windows.net",
     "web.core.windows.net"
   ]
+  deployment_identity_name = module.resource_names["deployer"].minimal_random_suffix
 }

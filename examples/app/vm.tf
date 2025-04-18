@@ -3,6 +3,12 @@ locals {
   vm_nic_name = "${local.vm_name}-nic"
 }
 
+data "azurerm_subnet" "vm_subnet" {
+  name                 = var.vm_subnet.subnet_name
+  virtual_network_name = var.vm_subnet.vnet_name
+  resource_group_name  = var.vm_subnet.resource_group
+}
+
 resource "azurerm_network_interface" "vm_nic" {
   name                = local.vm_nic_name
   location            = var.location
@@ -10,7 +16,7 @@ resource "azurerm_network_interface" "vm_nic" {
 
   ip_configuration {
     name                          = "private"
-    subnet_id                     = module.storage_subnet.id
+    subnet_id                     = data.azurerm_subnet.vm_subnet.id
     private_ip_address_allocation = "Dynamic"
   }
 }

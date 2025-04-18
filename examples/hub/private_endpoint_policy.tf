@@ -1,11 +1,11 @@
 # when a contributor creates a private endpoint
 # the policy will automatically register it with the centralized zone
 resource "azurerm_policy_definition" "private_endpoint" {
-  name                = var.policy_name
+  name                = module.short_names["pol"].minimal_random_suffix
   policy_type         = var.policy_type
   mode                = var.policy_mode
-  display_name        = var.policy_display_name
-  management_group_id = var.management_group.id
+  display_name        = "Private Endpoint DNS Policy"
+  management_group_id = module.management_group.management_group.id
 
   metadata = <<METADATA
     {
@@ -99,9 +99,10 @@ METADATA
 }
 
 resource "azurerm_user_assigned_identity" "auto_deploy_identity" {
-  name                = var.deployment_identity_name
-  resource_group_name = var.resource_group_name
+  name                = local.deployment_identity_name
+  resource_group_name = module.resource_group.name
   location            = var.location
+  depends_on          = [module.resource_group]
 }
 
 locals {

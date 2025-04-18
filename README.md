@@ -113,9 +113,7 @@ If `make check` target is successful, developer is good to commit the code to pr
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.117.1 |
+No providers.
 
 ## Modules
 
@@ -123,24 +121,11 @@ No modules.
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [azurerm_policy_definition.private_endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/policy_definition) | resource |
-| [azurerm_user_assigned_identity.auto_deploy_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+No resources.
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_deployment_identity_name"></a> [deployment\_identity\_name](#input\_deployment\_identity\_name) | The name of the deployment identity | `string` | n/a | yes |
-| <a name="input_location"></a> [location](#input\_location) | The Azure region where the resources will be created. | `string` | n/a | yes |
-| <a name="input_management_group"></a> [management\_group](#input\_management\_group) | Azure Management Group where the policy assignment will be created. | <pre>object({<br/>    id   = string<br/>    name = string<br/>  })</pre> | n/a | yes |
-| <a name="input_policy_display_name"></a> [policy\_display\_name](#input\_policy\_display\_name) | The name of the policy definition. | `string` | n/a | yes |
-| <a name="input_policy_mode"></a> [policy\_mode](#input\_policy\_mode) | The mode of the policy definition | `string` | `"Indexed"` | no |
-| <a name="input_policy_name"></a> [policy\_name](#input\_policy\_name) | The name of the policy definition. | `string` | n/a | yes |
-| <a name="input_policy_type"></a> [policy\_type](#input\_policy\_type) | The type of the policy definition. Can be 'Custom', 'BuiltIn', 'NotSpecified' or 'Static'. | `string` | `"Custom"` | no |
-| <a name="input_private_dns_zones"></a> [private\_dns\_zones](#input\_private\_dns\_zones) | The names of the private DNS zones to be monitored. | `set(string)` | `[]` | no |
-| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the resource group where the deployment identity will be created. | `string` | n/a | yes |
+No inputs.
 
 ## Outputs
 

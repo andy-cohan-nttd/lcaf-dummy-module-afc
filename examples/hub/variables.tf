@@ -13,6 +13,11 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "product_family" {
+  description = "The product family for the resources, used for naming conventions."
+  type        = string
+}
+
 # variable "parent_management_group_id" {
 #   description = "The ID of the parent management group for creating the management group. Leave empty for root."
 #   type        = string
@@ -79,8 +84,56 @@ variable "storage_subnet_address_space" {
 #   }
 # }
 
-variable "ssh_public_key_path" {
-  description = "Path to the SSH public key for VM access"
+# variable "management_group" {
+#   description = "Azure Management Group where the policy assignment will be created."
+#   type = object({
+#     id   = string
+#     name = string
+#   })
+# }
+
+# variable "policy_name" {
+#   type        = string
+#   description = "The name of the policy definition."
+# }
+
+# variable "policy_display_name" {
+#   type        = string
+#   description = "The name of the policy definition."
+# }
+
+variable "policy_type" {
+  description = "The type of the policy definition. Can be 'Custom', 'BuiltIn', 'NotSpecified' or 'Static'."
   type        = string
-  default     = "~/.ssh/id_lcaf.pub"
+  default     = "Custom"
+  validation {
+    condition     = contains(["Custom", "BuiltIn", "NotSpecified", "Static"], var.policy_type)
+    error_message = "The policy_type must be one of 'Custom', 'BuiltIn', 'NotSpecified' or 'Static'."
+  }
+}
+
+variable "policy_mode" {
+  description = "The mode of the policy definition"
+  type        = string
+  default     = "Indexed"
+  validation {
+    condition = contains([
+      "All",
+      "Indexed",
+      "Microsoft.ContainerService.Data",
+      "Microsoft.CustomerLockbox.Data",
+      "Microsoft.DataCatalog.Data",
+      "Microsoft.KeyVault.Data",
+      "Microsoft.Kubernetes.Data",
+      "Microsoft.MachineLearningServices.Data",
+      "Microsoft.Network.Data and Microsoft.Synapse.Data"
+    ], var.policy_mode)
+    error_message = "The policy_mode must be either 'Indexed' or 'All'."
+  }
+}
+
+variable "private_dns_zones" {
+  description = "The names of the private DNS zones to be monitored."
+  type        = set(string)
+  default     = []
 }
