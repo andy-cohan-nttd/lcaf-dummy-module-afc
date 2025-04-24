@@ -25,6 +25,7 @@ locals {
     "sp",
     "hvnet",
     "svnet",
+    "rvnet",
   ])
 
   azure_private_zones = [

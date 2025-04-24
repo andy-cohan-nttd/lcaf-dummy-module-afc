@@ -1,11 +1,34 @@
-# when a contributor creates a private endpoint
-# the policy will automatically register it with the centralized zone
-resource "azurerm_policy_definition" "private_endpoint" {
-  name                = module.short_names["pol"].minimal_random_suffix
-  policy_type         = var.policy_type
-  mode                = var.policy_mode
-  display_name        = "Private Endpoint DNS Policy"
+locals {
+  zones = jsonencode(tolist(var.private_dns_zones))
+}
+
+# disallow public access to all storage accounts
+resource "azurerm_management_group_policy_assignment" "deny_public_storage_access" {
+  name                 = "deny-public-strg-access"
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/4fa4b6c0-31ca-4c0d-b10d-24b96f62a751"
+  management_group_id  = module.management_group.management_group.id
+  display_name         = "Deny Public Storage Access"
+  description          = "This policy restricts public access to all storage accounts"
+  enforce              = true
+}
+
+resource "azurerm_management_group_policy_assignment" "ensure_customer_managed_key" {
+  name                 = "ensure-customer-mngd-key"
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/6fac406b-40ca-413b-bf8e-0bf964659c25"
+  management_group_id  = module.management_group.management_group.id
+  display_name         = "Ensure Customer Managed Key for Storage Accounts"
+  description          = "Ensures that all storage accounts are encrypted with a customer-managed key"
+  enforce              = true
+}
+
+# disallow privatelink DNS zones from being created in the subscription
+resource "azurerm_policy_definition" "deny_private_dns_zone_creation" {
+  name                = module.short_names["poldns"].minimal_random_suffix
+  display_name        = "Deny Private DNS Zone Creation"
+  policy_type         = "Custom"
+  mode                = "Indexed"
   management_group_id = module.management_group.management_group.id
+  description         = "This policy restricts creation of private DNS zones with the `privatelink` prefix"
 
   metadata = <<METADATA
     {
@@ -13,124 +36,52 @@ resource "azurerm_policy_definition" "private_endpoint" {
     }
 METADATA
 
-  parameters = <<PARAMETERS
-    {
-      "privateDnsZoneName": {
-        "type": "String",
-        "metadata": {
-          "description": "The name of the private DNS zone where the DNS entry should be created."
-        }
-      }
-    }
-  PARAMETERS
-
-  # policy_rule = <<POLICY_RULE
-  # {
-  #   "if": {
-  #     "field": "type",
-  #     "equals": "Microsoft.Network/privateEndpoints"
-  #   },
-  #   "then": {
-  #     "effect": "audit"
-  #   }
-  # }
-  # POLICY_RULE
-
   policy_rule = <<POLICY_RULE
-    {
-      "if": {
-        "field": "type",
-        "equals": "Microsoft.Network/privateEndpoints"
-      },
-      "then": {
-        "effect": "DeployIfNotExists",
-        "details": {
-          "type": "Microsoft.Network/privateDnsZones/A",
-          "roleDefinitionIds": [
-            "/providers/Microsoft.Authorization/roleDefinitions/contributor"
-          ],
-          "deployment": {
-            "properties": {
-              "mode": "incremental",
-              "template": {
-                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                "contentVersion": "1.0.0.0",
-                "resources": [
-                  {
-                    "type": "Microsoft.Network/privateDnsZones/A",
-                    "apiVersion": "2020-06-01",
-                    "name": "[concat(parameters('privateDnsZoneName'), '/', field('name'))]",
-                    "location": "global",
-                    "properties": {
-                      "ttl": 3600,
-                      "aRecords": [
-                        {
-                          "ipv4Address": "[field('properties.privateLinkServiceConnections[0].privateLinkServiceIpAddress')]"
-                        }
-                      ]
-                    }
-                  }
-                ],
-                "parameters": {
-                  "privateDnsZoneName": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          },
-          "existenceCondition": {
-            "allOf": [
-              {
-                "field": "type",
-                "equals": "Microsoft.Network/privateDnsZones/A"
-              },
-              {
-                "field": "name",
-                "equals": "[concat(parameters('privateDnsZoneName'), '/', field('name'))]"
-              }
-            ]
-          }
+  {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Network/privateDnsZones"
+        },
+        {
+          "field": "name",
+          "contains": "privatelink."
         }
+      ]
+    },
+    "then": {
+      "effect": "Deny"
+    }
+  }
+POLICY_RULE
+
+}
+resource "azurerm_management_group_policy_assignment" "deny_private_dns_zone_creation" {
+  name                 = "deny-prvt-dns-zn-create"
+  policy_definition_id = azurerm_policy_definition.deny_private_dns_zone_creation.id
+  management_group_id  = module.management_group.management_group.id
+  display_name         = "Deny Private DNS Zone Creation"
+  description          = "This policy restricts creation of private DNS zones with the `privatelink` prefix"
+}
+
+resource "azurerm_management_group_policy_assignment" "deploy_private_dns_zone_blob_storage" {
+  name                 = "deploy-prvt-dns-blob-stg"
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/75973700-529f-4de2-b794-fb9b6781b6b0"
+  management_group_id  = module.management_group.management_group.id
+  display_name         = "Configure Azure Blob Storage to use private DNS zones"
+  description          = "Ensures private endpoints to Azure Blob Storage are integrated with Azure Private DNS zones"
+  parameters           = <<PARAMETERS
+    {
+      "privateDnsZoneId": {
+        "value": "${azurerm_private_dns_zone.dns_zone["blob.core.windows.net"].id}"
       }
     }
-  POLICY_RULE
+PARAMETERS
 
+  location = var.location
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.auto_deploy_identity.id]
+  }
 }
-
-resource "azurerm_user_assigned_identity" "auto_deploy_identity" {
-  name                = local.deployment_identity_name
-  resource_group_name = module.resource_group.name
-  location            = var.location
-  depends_on          = [module.resource_group]
-}
-
-locals {
-  zones = jsonencode(tolist(var.private_dns_zones))
-}
-
-# resource "azurerm_management_group_policy_assignment" "private_endpoint" {
-#   # for_each = var.private_dns_zones
-
-#   # name                 = substr("${substr(each.key, 1, 8)}.${var.policy_name}", 0, 24)
-#   name                 = var.policy_name
-#   policy_definition_id = azurerm_policy_definition.private_endpoint.id
-#   management_group_id  = var.management_group.id
-#   # description          = "Private Endpoint DNS Policy Assignment for ${each.key}"
-#   description  = "Private Endpoint DNS Policy Assignment"
-#   display_name = var.policy_display_name
-#   enforce      = false
-#   parameters   = <<PARAMETERS
-#     {
-#       "privateDnsZoneName": {
-#         "value": "privatelink.${jsonencode(tolist(var.private_dns_zones))}"
-#       }
-#     }
-# PARAMETERS
-
-#   identity {
-#     type         = "UserAssigned"
-#     identity_ids = [azurerm_user_assigned_identity.auto_deploy_identity.id]
-#   }
-#   location = var.location
-# }

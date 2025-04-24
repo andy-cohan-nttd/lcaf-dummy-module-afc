@@ -17,7 +17,7 @@ module "short_names" {
   source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
   version = "~> 2.1"
 
-  for_each = toset(["sa", "pol"])
+  for_each = toset(["sa", "polsa", "poldns", "polga"])
 
   logical_product_family  = var.product_family
   logical_product_service = "test"
