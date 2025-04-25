@@ -16,13 +16,3 @@ resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_vnet_link"
   virtual_network_id    = module.hub_vnet.vnet_id
   depends_on            = [azurerm_private_dns_zone.dns_zone]
 }
-
-# resource "azurerm_virtual_network_dns_servers" "hub_vnet_dns_servers" {
-#   virtual_network_id = module.hub_vnet.vnet_id
-#   dns_servers        = [module.private_dns_resolver.private_dns_resolver_ip]
-# }
-
-# resource "azurerm_virtual_network_dns_servers" "spoke_vnet_dns_servers" {
-#   virtual_network_id = module.spoke_vnet.vnet_id
-#   dns_servers        = [module.private_dns_resolver.private_dns_resolver_ip]
-# }

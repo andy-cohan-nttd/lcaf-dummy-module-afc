@@ -7,11 +7,11 @@ tags = {
 }
 storage_subnet = {
   subnet_name    = "pdnsadm-test-eastus2-sandbox-000-stsn-000"
-  vnet_name      = "pdnsadm-test-sandbox-000-svnet"
+  vnet_name      = "pdnsadmtestsandbox000svnet"
   resource_group = "pdnsadm-test-eastus2-sandbox-000-rg-000"
 }
 vm_subnet = {
   subnet_name    = "pdnsadm-test-eastus2-sandbox-000-stsn-000"
-  vnet_name      = "pdnsadm-test-sandbox-000-svnet"
+  vnet_name      = "pdnsadmtestsandbox000svnet"
   resource_group = "pdnsadm-test-eastus2-sandbox-000-rg-000"
 }

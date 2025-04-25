@@ -5,8 +5,11 @@ locals {
     "fa",
     "fp",
     "fprcgn",
+    "hvnet",
+    "ibsn",
     "mgmtgrp",
     "nsg",
+    "obsn",
     "pdnsr",
     "pdnsrfr",
     "pdnsrie",
@@ -18,14 +21,11 @@ locals {
     "policy",
     "rg",
     "rt",
-    "ibsn",
-    "obsn",
+    "rvnet",
+    "sp",
     "stpe",
     "stsn",
-    "sp",
-    "hvnet",
     "svnet",
-    "rvnet",
   ])
 
   azure_private_zones = [

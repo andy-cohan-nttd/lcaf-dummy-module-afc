@@ -56,7 +56,6 @@ The key test is of the polices which should:
 | [azurerm_private_dns_zone_virtual_network_link.private_dns_vnet_link](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_zone_virtual_network_link) | resource |
 | [azurerm_role_assignment.auto_deploy_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_user_assigned_identity.auto_deploy_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
-| [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
 
 ## Inputs
 
@@ -67,7 +66,6 @@ The key test is of the polices which should:
 | <a name="input_inbound_dns_subnet_address_space"></a> [inbound\_dns\_subnet\_address\_space](#input\_inbound\_dns\_subnet\_address\_space) | The address prefix for the inbound DNS subnet. Use slash notation | `string` | `"10.54.0.0/26"` | no |
 | <a name="input_location"></a> [location](#input\_location) | The Azure region where resources will be created. This should be a valid Azure region. | `string` | n/a | yes |
 | <a name="input_outbound_dns_subnet_address_space"></a> [outbound\_dns\_subnet\_address\_space](#input\_outbound\_dns\_subnet\_address\_space) | The address prefix for the outbound DNS subnet. Use slash notation | `string` | `"10.54.0.64/26"` | no |
-| <a name="input_private_dns_zones"></a> [private\_dns\_zones](#input\_private\_dns\_zones) | The names of the private DNS zones to be monitored. | `set(string)` | `[]` | no |
 | <a name="input_product_family"></a> [product\_family](#input\_product\_family) | The product family for the resources, used for naming conventions. | `string` | n/a | yes |
 | <a name="input_resolver_vnet_address_space"></a> [resolver\_vnet\_address\_space](#input\_resolver\_vnet\_address\_space) | The address prefix for the DNS resolver network. Use slash notation | `string` | `"10.54.0.0/16"` | no |
 | <a name="input_spoke_vnet_address_space"></a> [spoke\_vnet\_address\_space](#input\_spoke\_vnet\_address\_space) | The address prefix for the spoke network. Use slash notation | `string` | `"10.55.0.0/16"` | no |
