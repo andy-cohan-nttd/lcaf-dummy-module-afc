@@ -1,6 +1,6 @@
 locals {
-  hub_vnet_name      = module.resource_names["hvnet"].recommended_per_length_restriction
-  spoke_vnet_name    = module.resource_names["svnet"].recommended_per_length_restriction
+  hub_vnet_name = module.resource_names["hvnet"].recommended_per_length_restriction
+  # spoke_vnet_name    = module.resource_names["svnet"].recommended_per_length_restriction
   resolver_vnet_name = module.resource_names["rvnet"].recommended_per_length_restriction
   nsg_name           = module.resource_names["nsg"].minimal_random_suffix
   # route_table_name = module.resource_names["rt"].minimal_random_suffix
@@ -160,34 +160,34 @@ module "hub_vnet" {
 #   subnet_id      = module.outbound_dns_subnet.subnet.id
 # }
 
-module "spoke_vnet" {
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
+# module "spoke_vnet" {
+#   source = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
 
-  address_space       = [var.spoke_vnet_address_space]
-  resource_group_name = module.resource_group.name
-  vnet_location       = var.location
-  vnet_name           = local.spoke_vnet_name
-  dns_servers         = [module.private_dns_resolver.private_dns_resolver_ip]
-  depends_on          = [module.resource_group, module.network_security_group]
-}
+#   address_space       = [var.spoke_vnet_address_space]
+#   resource_group_name = module.resource_group.name
+#   vnet_location       = var.location
+#   vnet_name           = local.spoke_vnet_name
+#   dns_servers         = [module.private_dns_resolver.private_dns_resolver_ip]
+#   depends_on          = [module.resource_group, module.network_security_group]
+# }
 
-module "storage_subnet" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
-  version = "~> 1.1"
+# module "storage_subnet" {
+#   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
+#   version = "~> 1.1"
 
-  address_prefix              = var.storage_subnet_address_space
-  name                        = module.resource_names["stsn"].standard
-  network_security_group_name = local.nsg_name
-  resource_group_name         = module.resource_group.name
-  service_endpoints           = ["Microsoft.Storage"]
-  virtual_network_name        = local.spoke_vnet_name
+#   address_prefix              = var.storage_subnet_address_space
+#   name                        = module.resource_names["stsn"].standard
+#   network_security_group_name = local.nsg_name
+#   resource_group_name         = module.resource_group.name
+#   service_endpoints           = ["Microsoft.Storage"]
+#   virtual_network_name        = local.spoke_vnet_name
 
-  depends_on = [
-    module.spoke_vnet,
-    module.network_security_group,
-    # module.route_table,
-  ]
-}
+#   depends_on = [
+#     module.spoke_vnet,
+#     module.network_security_group,
+#     # module.route_table,
+#   ]
+# }
 
 module "peer_hub_vnet_to_resolver_vnet" {
   # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
@@ -221,34 +221,34 @@ module "peer_resolver_vnet_to_hub_vnet" {
   depends_on                   = [module.dns_resolver_vnet, module.hub_vnet]
 }
 
-module "peer_hub_vnet_to_spoke_vnet" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
-  # version = "~> 1.0"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
+# module "peer_hub_vnet_to_spoke_vnet" {
+#   # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+#   # version = "~> 1.0"
+#   source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
 
-  peering_name                 = "peer${local.hub_vnet_name}_to_${local.spoke_vnet_name}"
-  resource_group_name          = module.resource_group.name
-  virtual_network_name         = local.hub_vnet_name
-  remote_virtual_network_id    = module.spoke_vnet.vnet_id
-  allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = false
-  use_remote_gateways          = false
-  depends_on                   = [module.hub_vnet, module.spoke_vnet]
-}
+#   peering_name                 = "peer${local.hub_vnet_name}_to_${local.spoke_vnet_name}"
+#   resource_group_name          = module.resource_group.name
+#   virtual_network_name         = local.hub_vnet_name
+#   remote_virtual_network_id    = module.spoke_vnet.vnet_id
+#   allow_virtual_network_access = true
+#   allow_forwarded_traffic      = true
+#   allow_gateway_transit        = false
+#   use_remote_gateways          = false
+#   depends_on                   = [module.hub_vnet, module.spoke_vnet]
+# }
 
-module "peer_spoke_vnet_to_hub_vnet" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
-  # version = "~> 1.0"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
+# module "peer_spoke_vnet_to_hub_vnet" {
+#   # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+#   # version = "~> 1.0"
+#   source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
 
-  peering_name                 = "peer${local.spoke_vnet_name}_to_${local.hub_vnet_name}"
-  resource_group_name          = module.resource_group.name
-  virtual_network_name         = local.spoke_vnet_name
-  remote_virtual_network_id    = module.hub_vnet.vnet_id
-  allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = false
-  use_remote_gateways          = false
-  depends_on                   = [module.hub_vnet, module.spoke_vnet]
-}
+#   peering_name                 = "peer${local.spoke_vnet_name}_to_${local.hub_vnet_name}"
+#   resource_group_name          = module.resource_group.name
+#   virtual_network_name         = local.spoke_vnet_name
+#   remote_virtual_network_id    = module.hub_vnet.vnet_id
+#   allow_virtual_network_access = true
+#   allow_forwarded_traffic      = true
+#   allow_gateway_transit        = false
+#   use_remote_gateways          = false
+#   depends_on                   = [module.hub_vnet, module.spoke_vnet]
+# }

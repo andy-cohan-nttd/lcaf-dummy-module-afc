@@ -53,15 +53,3 @@ variable "outbound_dns_subnet_address_space" {
   type        = string
   default     = "10.54.0.64/26"
 }
-
-variable "spoke_vnet_address_space" {
-  description = "The address prefix for the spoke network. Use slash notation"
-  type        = string
-  default     = "10.55.0.0/16" # Default value for the virtual network address prefix, can be overridden
-}
-
-variable "storage_subnet_address_space" {
-  description = "The address prefix for the storage subnet. Use slash notation"
-  type        = string
-  default     = "10.55.0.0/26"
-}

@@ -37,9 +37,8 @@ module "resource_group" {
   tags     = var.tags
 }
 
-# data "azurerm_client_config" "current" {
-#   # This data source is used to get the current Azure client configuration
-# }
+# This data source is used to get the current Azure client configuration
+# data "azurerm_client_config" "current" {}
 
 module "management_group" {
   # source  = "terraform.registry.launch.nttdata.com/module_primitive/management_group/azurerm"
@@ -48,5 +47,5 @@ module "management_group" {
 
   name             = module.resource_names["mgmtgrp"].standard
   display_name     = "Management Group for PDNS Policy"
-  subscription_ids = [] # [data.azurerm_client_config.current.subscription_id] # Use the current subscription for the management group
+  subscription_ids = ["9a75417b-0956-4b5a-b243-328ec6c522b4"] # the iac subscription as spoke
 }
