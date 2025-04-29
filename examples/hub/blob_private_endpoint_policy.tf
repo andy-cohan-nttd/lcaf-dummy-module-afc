@@ -19,3 +19,4 @@ PARAMETERS
     identity_ids = [azurerm_user_assigned_identity.auto_deploy_identity.id]
   }
 }
+# TODO add for privatelink zones also?

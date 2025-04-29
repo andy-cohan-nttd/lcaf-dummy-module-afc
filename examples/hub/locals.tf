@@ -17,6 +17,7 @@ locals {
     "pdnsroep",
     "pdnsrvnl",
     "pdzvnl",
+    "pdzvnp",
     "pip",
     "policy",
     "rg",
