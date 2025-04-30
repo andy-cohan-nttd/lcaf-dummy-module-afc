@@ -24,7 +24,6 @@ locals {
     "rt",
     "rvnet",
     "sp",
-    "stpe",
     "stsn",
     "svnet",
   ])
