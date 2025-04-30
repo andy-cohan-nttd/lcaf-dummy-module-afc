@@ -45,7 +45,10 @@ module "management_group" {
   # version = "~> 1.0"
   source = "../../../../launchbynttdata/tf-azurerm-module_primitive-management_group" # Use the local path for testing
 
-  name             = module.resource_names["mgmtgrp"].standard
-  display_name     = "Management Group for PDNS Policy"
-  subscription_ids = ["9a75417b-0956-4b5a-b243-328ec6c522b4"] # the iac subscription as spoke
+  name         = module.resource_names["mgmtgrp"].standard
+  display_name = "Management Group for PDNS Policy"
+  subscription_ids = [
+    "9a75417b-0956-4b5a-b243-328ec6c522b4", # the iac subscription as spoke
+    # "4554e249-e00f-4668-9be3-da31ed200163", # sandbox subscription as hub
+  ]
 }

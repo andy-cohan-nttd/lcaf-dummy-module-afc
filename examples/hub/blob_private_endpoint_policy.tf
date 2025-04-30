@@ -8,7 +8,7 @@ resource "azurerm_management_group_policy_assignment" "deploy_private_dns_zone_b
   parameters           = <<PARAMETERS
     {
       "privateDnsZoneId": {
-        "value": "${azurerm_private_dns_zone.dns_zone["blob.core.windows.net"].id}"
+        "value": "${azurerm_private_dns_zone.privatelink_dns_zone["blob.core.windows.net"].id}"
       }
     }
 PARAMETERS

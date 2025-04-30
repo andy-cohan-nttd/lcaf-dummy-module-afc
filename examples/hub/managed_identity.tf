@@ -8,5 +8,7 @@ resource "azurerm_user_assigned_identity" "auto_deploy_identity" {
 resource "azurerm_role_assignment" "auto_deploy_identity" {
   scope                = module.resource_group.id
   role_definition_name = "Private DNS Zone Contributor"
-  principal_id         = azurerm_user_assigned_identity.auto_deploy_identity.principal_id
+  # role_definition_name = "Contributor"
+  # role_definition_name = "Network Contributor"
+  principal_id = azurerm_user_assigned_identity.auto_deploy_identity.principal_id
 }
