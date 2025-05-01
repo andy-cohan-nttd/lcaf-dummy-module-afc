@@ -10,11 +10,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-# use builtin policy definition to deploy private dns zone for keyvaults
+# use builtin policy definition to deploy private dns zone records for keyvault private endpoints
 resource "azurerm_management_group_policy_assignment" "deploy_private_dns_zone_keyvaults" {
-  name                 = var.keyvault_dns_policy.name         # "deploy-prvt-dns-kvs"
-  display_name         = var.keyvault_dns_policy.display_name # "Configure Azure Keyvaults to use private DNS zones"
-  description          = var.keyvault_dns_policy.description  # "Ensures private endpoints to Azure Keyvaults are integrated with Azure Private DNS zones"
+  name                 = var.keyvault_dns_policy.name
+  display_name         = var.keyvault_dns_policy.display_name
+  description          = var.keyvault_dns_policy.description
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/ac673a9a-f77d-4846-b2d8-a57f8e1c01d4"
   management_group_id  = module.management_group.management_group.id
   parameters           = <<PARAMETERS

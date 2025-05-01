@@ -20,6 +20,7 @@ resource "azurerm_management_group_policy_assignment" "deny_public_storage_acces
   enforce              = true
 }
 
+# TODO add this
 # resource "azurerm_management_group_policy_assignment" "ensure_customer_managed_key" {
 #   name                 = "ensure-customer-mngd-key"
 #   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/6fac406b-40ca-413b-bf8e-0bf964659c25"
