@@ -20,29 +20,45 @@ module "storage_account" {
   storage_account_name          = local.storage_account_name
   network_rules = {
     virtual_network_subnet_ids = [data.azurerm_subnet.storage_subnet.id]
-    # private_link_access = [
-    #   {
-    #     endpoint_resource_id = "TODO"
-    #   }
-    # ]
   }
   depends_on = [module.resource_group]
 }
 
-module "storage_private_endpoint" {
-  source              = "../../../../launchbynttdata/tf-azurerm-module_primitive-private_endpoint"
-  location            = var.location
+# doesn't have the lifecycle ignore_changes we need since the policy modifies the endpoint
+# module "storage_private_endpoint" {
+#   source              = "../../../../launchbynttdata/tf-azurerm-module_primitive-private_endpoint"
+#   location            = var.location
+#   name                = module.resource_names["stpe"].standard
+#   resource_group_name = module.resource_group.name
+#   subnet_id           = data.azurerm_subnet.storage_subnet.id
+
+#   private_service_connection = {
+#     is_manual_connection           = false
+#     name                           = "pe-${local.storage_account_name}"
+#     private_connection_resource_id = module.storage_account.id
+#     subresource_names              = ["blob"] # TODO
+#   }
+#   #   records             = [azurerm_private_endpoint.private_endpoint.private_service_connection[0].private_ip_address]
+
+#   depends_on = [module.resource_group]
+# }
+
+# so use a resource block for now until that module is updated
+resource "azurerm_private_endpoint" "storage_pe" {
   name                = module.resource_names["stpe"].standard
   resource_group_name = module.resource_group.name
+  location            = var.location
   subnet_id           = data.azurerm_subnet.storage_subnet.id
 
-  private_service_connection = {
-    is_manual_connection           = false
+  private_service_connection {
     name                           = "pe-${local.storage_account_name}"
+    is_manual_connection           = false
     private_connection_resource_id = module.storage_account.id
-    subresource_names              = ["blob"] # TODO
+    subresource_names              = ["blob"]
   }
-  #   records             = [azurerm_private_endpoint.private_endpoint.private_service_connection[0].private_ip_address]
-
-  depends_on = [module.resource_group]
+  lifecycle {
+    ignore_changes = [
+      private_dns_zone_group
+    ]
+  }
 }

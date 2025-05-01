@@ -9,3 +9,78 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+variable "management_group" {
+  type = object({
+    name         = string
+    display_name = string
+  })
+  description = "Management group values"
+}
+
+variable "spoke_subscription_ids" {
+  type        = set(string)
+  description = "Subscription IDs for the spoke subscriptions"
+}
+
+variable "blob_private_dnz_zone_id" {
+  type        = string
+  description = "Private DNS zone (privatelink.blob.core.windows.net) ID for blob storage"
+}
+
+variable "keyvault_private_dns_zone_id" {
+  type        = string
+  description = "Private DNS zone (privatelink.vaultcore.azure.net) ID for keyvaults"
+}
+
+variable "deploy_identity_name" {
+  type        = string
+  description = "Name of the user assigned identity for deployment"
+}
+
+variable "resource_group_name" {
+  type        = string
+  description = "Name of the resource group into which the resources will be deployed"
+}
+
+variable "location" {
+  type        = string
+  description = "Azure region of the deployed resources"
+}
+
+variable "private_dns_resource_group_id" {
+  type        = string
+  description = "Resource group ID where the privatelink DNS zones reside"
+}
+
+variable "deny_private_dns_zone_policy" {
+  type = object({
+    name         = string
+    display_name = string
+    description  = string
+  })
+}
+
+variable "blob_dns_policy" {
+  type = object({
+    name         = string
+    display_name = string
+    description  = string
+  })
+}
+
+variable "keyvault_dns_policy" {
+  type = object({
+    name         = string
+    display_name = string
+    description  = string
+  })
+}
+
+variable "storage_public_access_policy" {
+  type = object({
+    name         = string
+    display_name = string
+    description  = string
+  })
+}

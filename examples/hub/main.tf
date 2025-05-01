@@ -1,3 +1,15 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 module "resource_names" {
   # source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
   # version = "~> 2.1"
@@ -37,18 +49,39 @@ module "resource_group" {
   tags     = var.tags
 }
 
-# This data source is used to get the current Azure client configuration
-# data "azurerm_client_config" "current" {}
-
 module "management_group" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/management_group/azurerm"
-  # version = "~> 1.0"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-management_group" # Use the local path for testing
+  source = "../.."
 
-  name         = module.resource_names["mgmtgrp"].standard
-  display_name = "Management Group for PDNS Policy"
-  subscription_ids = [
-    "9a75417b-0956-4b5a-b243-328ec6c522b4", # the iac subscription as spoke
-    # "4554e249-e00f-4668-9be3-da31ed200163", # sandbox subscription as hub
-  ]
+  blob_private_dnz_zone_id      = azurerm_private_dns_zone.privatelink_dns_zone["blob.core.windows.net"].id
+  deploy_identity_name          = local.deployment_identity_name
+  keyvault_private_dns_zone_id  = azurerm_private_dns_zone.privatelink_dns_zone["vaultcore.azure.net"].id
+  location                      = var.location
+  private_dns_resource_group_id = module.resource_group.id
+  resource_group_name           = module.resource_group.name
+  spoke_subscription_ids        = var.spoke_subscription_ids
+  management_group = {
+    name         = module.resource_names["mgmtgrp"].standard
+    display_name = "Management Group for PDNS Policy"
+  }
+  deny_private_dns_zone_policy = {
+    name         = module.short_names["poldns"].minimal_random_suffix
+    display_name = "Deny Private DNS Zone Creation"
+    description  = "This policy restricts creation of private DNS zones with the `privatelink` prefix"
+  }
+  blob_dns_policy = {
+    name         = "deploy-prvt-dns-blob-stg"
+    display_name = "Configure Azure Blob Storage to use private DNS zones"
+    description  = "Ensures private endpoints to Azure Blob Storage are integrated with Azure Private DNS zones"
+  }
+  keyvault_dns_policy = {
+    name         = "deploy-prvt-dns-kvs"
+    display_name = "Configure Azure Keyvaults to use private DNS zones"
+    description  = "Ensures private endpoints to Azure Keyvaults are integrated with Azure Private DNS zones"
+  }
+  storage_public_access_policy = {
+    name         = "deny-public-strg-access"
+    display_name = "Deny Public Storage Access"
+    description  = "This policy restricts public access to all storage accounts"
+  }
+  depends_on = [module.resource_group]
 }
