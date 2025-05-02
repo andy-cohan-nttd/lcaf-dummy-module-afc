@@ -11,8 +11,7 @@
 // limitations under the License.
 
 locals {
-  vm_name     = module.resource_names["vm"].standard
-  vm_nic_name = "${local.vm_name}-nic"
+  vm_name = module.resource_names["vm"].standard
 }
 
 data "azurerm_subnet" "vm_subnet" {
@@ -22,7 +21,7 @@ data "azurerm_subnet" "vm_subnet" {
 }
 
 resource "azurerm_network_interface" "vm_nic" {
-  name                = local.vm_nic_name
+  name                = "${local.vm_name}-nic"
   location            = var.location
   resource_group_name = module.resource_group.name
 

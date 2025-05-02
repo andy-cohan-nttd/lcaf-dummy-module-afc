@@ -10,14 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-# resource "azurerm_private_dns_zone" "dns_zone" {
-#   for_each = toset(local.azure_private_zones)
-
-#   name                = each.value
-#   resource_group_name = module.resource_group.name
-#   depends_on          = [module.resource_group]
-# }
-
 locals {
   azure_private_zones = [
     "blob.core.windows.net",

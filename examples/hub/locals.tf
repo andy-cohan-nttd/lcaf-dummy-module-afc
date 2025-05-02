@@ -27,5 +27,4 @@ locals {
     "stsn",
     "svnet",
   ])
-  deployment_identity_name = module.resource_names["deployer"].minimal_random_suffix
 }

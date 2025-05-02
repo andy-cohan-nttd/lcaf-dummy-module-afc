@@ -9,9 +9,8 @@ data "azurerm_subnet" "storage_subnet" {
 }
 
 module "storage_account" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm"
-  # version = "~> 1.3"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-storage_account"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/storage_account/azurerm"
+  version = "~> 1.3"
 
   enable_https_traffic_only     = true
   location                      = var.location

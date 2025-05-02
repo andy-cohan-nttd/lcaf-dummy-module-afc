@@ -11,9 +11,8 @@
 // limitations under the License.
 
 module "resource_names" {
-  # source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
-  # version = "~> 2.1"
-  source = "../../../../launchbynttdata/tf-launch-module_library-resource_name"
+  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
+  version = "~> 2.1"
 
   for_each = local.resource_names
 
@@ -53,7 +52,7 @@ module "management_group" {
   source = "../.."
 
   blob_private_dnz_zone_id      = azurerm_private_dns_zone.privatelink_dns_zone["blob.core.windows.net"].id
-  deploy_identity_name          = local.deployment_identity_name
+  deploy_identity_name          = module.resource_names["deployer"].minimal_random_suffix
   keyvault_private_dns_zone_id  = azurerm_private_dns_zone.privatelink_dns_zone["vaultcore.azure.net"].id
   location                      = var.location
   private_dns_resource_group_id = module.resource_group.id

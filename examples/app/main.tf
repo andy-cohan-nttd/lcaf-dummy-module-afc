@@ -11,9 +11,8 @@
 // limitations under the License.
 
 module "resource_names" {
-  # source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
-  # version = "~> 2.1"
-  source = "../../../../launchbynttdata/tf-launch-module_library-resource_name"
+  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
+  version = "~> 2.1"
 
   for_each = local.resource_names
 

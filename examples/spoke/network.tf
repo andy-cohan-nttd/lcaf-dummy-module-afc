@@ -13,7 +13,6 @@
 locals {
   spoke_vnet_name = module.resource_names["svnet"].recommended_per_length_restriction
   nsg_name        = module.resource_names["nsg"].minimal_random_suffix
-  # route_table_name = module.resource_names["rt"].minimal_random_suffix
 }
 
 module "network_security_group" {
@@ -67,7 +66,8 @@ module "network_security_group" {
 }
 
 module "spoke_vnet" {
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network/azurerm"
+  version = "~> 3.1"
 
   address_space       = [var.spoke_vnet_address_space]
   resource_group_name = module.resource_group.name

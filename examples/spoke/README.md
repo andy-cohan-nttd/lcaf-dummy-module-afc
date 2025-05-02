@@ -22,8 +22,8 @@
 | <a name="module_peer_hub_vnet_to_spoke_vnet"></a> [peer\_hub\_vnet\_to\_spoke\_vnet](#module\_peer\_hub\_vnet\_to\_spoke\_vnet) | ../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering | n/a |
 | <a name="module_peer_spoke_vnet_to_hub_vnet"></a> [peer\_spoke\_vnet\_to\_hub\_vnet](#module\_peer\_spoke\_vnet\_to\_hub\_vnet) | ../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering | n/a |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.0 |
-| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | ../../../../launchbynttdata/tf-launch-module_library-resource_name | n/a |
-| <a name="module_spoke_vnet"></a> [spoke\_vnet](#module\_spoke\_vnet) | ../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network | n/a |
+| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.1 |
+| <a name="module_spoke_vnet"></a> [spoke\_vnet](#module\_spoke\_vnet) | terraform.registry.launch.nttdata.com/module_primitive/virtual_network/azurerm | ~> 3.1 |
 | <a name="module_storage_subnet"></a> [storage\_subnet](#module\_storage\_subnet) | terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm | ~> 1.1 |
 
 ## Resources
