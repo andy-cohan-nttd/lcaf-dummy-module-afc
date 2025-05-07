@@ -96,9 +96,8 @@ module "storage_subnet" {
 }
 
 module "peer_hub_vnet_to_spoke_vnet" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
-  # version = "~> 1.0"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+  version = "~> 1.2"
 
   peering_name                 = "peer${var.hub_vnet.name}_to_${local.spoke_vnet_name}"
   resource_group_name          = var.hub_vnet.resource_group
@@ -120,9 +119,8 @@ data "azurerm_virtual_network" "hub_vnet" {
 }
 
 module "peer_spoke_vnet_to_hub_vnet" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
-  # version = "~> 1.0"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+  version = "~> 1.2"
 
   peering_name                 = "peer${local.spoke_vnet_name}_to_${var.hub_vnet.name}"
   resource_group_name          = module.resource_group.name

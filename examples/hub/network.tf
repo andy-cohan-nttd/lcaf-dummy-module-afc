@@ -69,7 +69,6 @@ module "network_security_group" {
 module "dns_resolver_vnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network/azurerm"
   version = "~> 3.1"
-  # source = "../../../../launchbynttdata/tf-azurerm-module_primitive-virtual_network"
 
   address_space       = [var.resolver_vnet_address_space]
   resource_group_name = module.resource_group.name
@@ -157,9 +156,8 @@ module "hub_vnet" {
 }
 
 module "peer_hub_vnet_to_resolver_vnet" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
-  # version = "~> 1.1"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+  version = "~> 1.2"
 
   peering_name                 = "peer${local.hub_vnet_name}_to_${local.resolver_vnet_name}"
   resource_group_name          = module.resource_group.name
@@ -173,9 +171,8 @@ module "peer_hub_vnet_to_resolver_vnet" {
 }
 
 module "peer_resolver_vnet_to_hub_vnet" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
-  # version = "~> 1.1"
-  source = "../../../../launchbynttdata/tf-azurerm-module_primitive-vnet_peering"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+  version = "~> 1.2"
 
   peering_name                 = "peer${local.resolver_vnet_name}_to_${local.hub_vnet_name}"
   resource_group_name          = module.resource_group.name
