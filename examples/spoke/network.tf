@@ -95,11 +95,23 @@ module "storage_subnet" {
   ]
 }
 
+data "azurerm_virtual_network" "hub_vnet" {
+  name                = var.hub_vnet.name
+  resource_group_name = var.hub_vnet.resource_group
+  provider            = azurerm.hub
+}
+
+data "azurerm_virtual_network" "resolver_vnet" {
+  name                = var.resolver_vnet.name
+  resource_group_name = var.resolver_vnet.resource_group
+  provider            = azurerm.hub
+}
+
 module "peer_hub_vnet_to_spoke_vnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
   version = "~> 1.2"
 
-  peering_name                 = "peer${var.hub_vnet.name}_to_${local.spoke_vnet_name}"
+  peering_name                 = "peer_hub_to_spoke" # "peer${var.hub_vnet.name}_to_${local.spoke_vnet_name}"
   resource_group_name          = var.hub_vnet.resource_group
   virtual_network_name         = var.hub_vnet.name
   remote_virtual_network_id    = module.spoke_vnet.vnet_id
@@ -112,17 +124,11 @@ module "peer_hub_vnet_to_spoke_vnet" {
   }
 }
 
-data "azurerm_virtual_network" "hub_vnet" {
-  name                = var.hub_vnet.name
-  resource_group_name = var.hub_vnet.resource_group
-  provider            = azurerm.hub
-}
-
 module "peer_spoke_vnet_to_hub_vnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
   version = "~> 1.2"
 
-  peering_name                 = "peer${local.spoke_vnet_name}_to_${var.hub_vnet.name}"
+  peering_name                 = "peer_spoke_to_hub" # "peer${local.spoke_vnet_name}_to_${var.hub_vnet.name}"
   resource_group_name          = module.resource_group.name
   virtual_network_name         = local.spoke_vnet_name
   remote_virtual_network_id    = data.azurerm_virtual_network.hub_vnet.id
@@ -130,4 +136,47 @@ module "peer_spoke_vnet_to_hub_vnet" {
   allow_forwarded_traffic      = true
   allow_gateway_transit        = false
   use_remote_gateways          = false
+}
+
+module "peer_resolver_vnet_to_spoke_vnet" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+  version = "~> 1.2"
+
+  peering_name                 = "peer_resolver_to_spoke" # "peer${var.resolver_vnet.name}_to_${local.spoke_vnet_name}"
+  resource_group_name          = var.resolver_vnet.resource_group
+  virtual_network_name         = var.resolver_vnet.name
+  remote_virtual_network_id    = module.spoke_vnet.vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+  providers = {
+    azurerm = azurerm.hub
+  }
+}
+
+module "peer_spoke_vnet_to_resolver_vnet" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
+  version = "~> 1.2"
+
+  peering_name                 = "peer_spoke_to_resolver" # "peer${local.spoke_vnet_name}_to_${var.resolver_vnet.name}"
+  resource_group_name          = module.resource_group.name
+  virtual_network_name         = local.spoke_vnet_name
+  remote_virtual_network_id    = data.azurerm_virtual_network.resolver_vnet.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+# link spoke vnet to private dns zones
+resource "azurerm_private_dns_zone_virtual_network_link" "privatelink_dns_vnet_link_spoke" {
+  for_each = toset(local.azure_private_zones)
+
+  name = module.resource_names["pdzvnps"].minimal_random_suffix
+  # resource_group_name   = module.resource_group.name
+  resource_group_name   = var.hub_vnet.resource_group
+  private_dns_zone_name = "privatelink.${each.value}"
+  virtual_network_id    = module.spoke_vnet.vnet_id
+  provider              = azurerm.hub
 }

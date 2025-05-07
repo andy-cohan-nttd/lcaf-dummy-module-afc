@@ -54,3 +54,11 @@ variable "hub_vnet" {
   })
   description = "coordinates of the hub virtual network"
 }
+
+variable "resolver_vnet" {
+  type = object({
+    name           = string
+    resource_group = string
+  })
+  description = "coordinates of the resolver virtual network"
+}

@@ -10,3 +10,7 @@ hub_vnet = {
   name           = "pdnsadmhtestsandbox000hvnet"
   resource_group = "pdnsadmh-test-eastus2-sandbox-000-rg-000"
 }
+resolver_vnet = {
+  name           = "pdnsadmhtestsandbox000rvnet"
+  resource_group = "pdnsadmh-test-eastus2-sandbox-000-rg-000"
+}

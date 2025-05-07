@@ -159,7 +159,7 @@ module "peer_hub_vnet_to_resolver_vnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
   version = "~> 1.2"
 
-  peering_name                 = "peer${local.hub_vnet_name}_to_${local.resolver_vnet_name}"
+  peering_name                 = "peer_hub_to_resolver" # "peer${local.hub_vnet_name}_to_${local.resolver_vnet_name}"
   resource_group_name          = module.resource_group.name
   virtual_network_name         = local.hub_vnet_name
   remote_virtual_network_id    = module.dns_resolver_vnet.vnet_id
@@ -174,7 +174,7 @@ module "peer_resolver_vnet_to_hub_vnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
   version = "~> 1.2"
 
-  peering_name                 = "peer${local.resolver_vnet_name}_to_${local.hub_vnet_name}"
+  peering_name                 = "peer_resolver_to_hub" # "peer${local.resolver_vnet_name}_to_${local.hub_vnet_name}"
   resource_group_name          = module.resource_group.name
   virtual_network_name         = local.resolver_vnet_name
   remote_virtual_network_id    = module.hub_vnet.vnet_id

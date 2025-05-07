@@ -20,7 +20,9 @@
 |------|--------|---------|
 | <a name="module_network_security_group"></a> [network\_security\_group](#module\_network\_security\_group) | terraform.registry.launch.nttdata.com/module_primitive/network_security_group/azurerm | ~> 1.0 |
 | <a name="module_peer_hub_vnet_to_spoke_vnet"></a> [peer\_hub\_vnet\_to\_spoke\_vnet](#module\_peer\_hub\_vnet\_to\_spoke\_vnet) | terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm | ~> 1.2 |
+| <a name="module_peer_resolver_vnet_to_spoke_vnet"></a> [peer\_resolver\_vnet\_to\_spoke\_vnet](#module\_peer\_resolver\_vnet\_to\_spoke\_vnet) | terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm | ~> 1.2 |
 | <a name="module_peer_spoke_vnet_to_hub_vnet"></a> [peer\_spoke\_vnet\_to\_hub\_vnet](#module\_peer\_spoke\_vnet\_to\_hub\_vnet) | terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm | ~> 1.2 |
+| <a name="module_peer_spoke_vnet_to_resolver_vnet"></a> [peer\_spoke\_vnet\_to\_resolver\_vnet](#module\_peer\_spoke\_vnet\_to\_resolver\_vnet) | terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm | ~> 1.2 |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.0 |
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.1 |
 | <a name="module_spoke_vnet"></a> [spoke\_vnet](#module\_spoke\_vnet) | terraform.registry.launch.nttdata.com/module_primitive/virtual_network/azurerm | ~> 3.1 |
@@ -30,7 +32,9 @@
 
 | Name | Type |
 |------|------|
+| [azurerm_private_dns_zone_virtual_network_link.privatelink_dns_vnet_link_spoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_zone_virtual_network_link) | resource |
 | [azurerm_virtual_network.hub_vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/virtual_network) | data source |
+| [azurerm_virtual_network.resolver_vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/virtual_network) | data source |
 
 ## Inputs
 
@@ -41,6 +45,7 @@
 | <a name="input_location"></a> [location](#input\_location) | The Azure region where resources will be created. This should be a valid Azure region. | `string` | n/a | yes |
 | <a name="input_private_dns_resolver_ip"></a> [private\_dns\_resolver\_ip](#input\_private\_dns\_resolver\_ip) | The IP address of the private DNS resolver | `string` | n/a | yes |
 | <a name="input_product_family"></a> [product\_family](#input\_product\_family) | The product family for the resources, used for naming conventions. | `string` | n/a | yes |
+| <a name="input_resolver_vnet"></a> [resolver\_vnet](#input\_resolver\_vnet) | coordinates of the resolver virtual network | <pre>object({<br/>    name           = string<br/>    resource_group = string<br/>  })</pre> | n/a | yes |
 | <a name="input_spoke_vnet_address_space"></a> [spoke\_vnet\_address\_space](#input\_spoke\_vnet\_address\_space) | The address prefix for the spoke network. Use slash notation | `string` | `"10.55.0.0/16"` | no |
 | <a name="input_storage_subnet_address_space"></a> [storage\_subnet\_address\_space](#input\_storage\_subnet\_address\_space) | The address prefix for the storage subnet. Use slash notation | `string` | `"10.55.0.0/26"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the resources | `map(string)` | n/a | yes |
