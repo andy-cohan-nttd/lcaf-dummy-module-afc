@@ -123,25 +123,25 @@ module "outbound_dns_subnet" {
   ]
 }
 
-module "private_dns_resolver" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/private_dns_resolver/azurerm"
-  # version = "~> 1.0"
-  source = "../../../tf-azurerm-module_collection-private_dns_resolver"
+# module "private_dns_resolver" {
+#   # source  = "terraform.registry.launch.nttdata.com/module_primitive/private_dns_resolver/azurerm"
+#   # version = "~> 1.0"
+#   source = "../../../tf-azurerm-module_collection-private_dns_resolver"
 
-  location               = var.location
-  name                   = module.resource_names["pdnsr"].standard
-  inbound_endpoint_name  = module.resource_names["pdnsriep"].standard
-  outbound_endpoint_name = module.resource_names["pdnsroep"].standard
-  resolver_link_name     = module.resource_names["pdnsrvnl"].standard
-  resource_group_name    = module.resource_group.name
-  ruleset_name           = module.resource_names["pdnsrfr"].standard
-  inbound_subnet_id      = module.inbound_dns_subnet.id
-  outbound_subnet_id     = module.outbound_dns_subnet.id
-  tags                   = var.tags
-  virtual_network_id     = module.dns_resolver_vnet.vnet_id
-  # TODO add forwarding to Azure-provided DNS for public DNS resolution
-  # TODO add outound endpoint to "on-premises" DNS servers for corporate DNS resolution
-}
+#   location               = var.location
+#   name                   = module.resource_names["pdnsr"].standard
+#   inbound_endpoint_name  = module.resource_names["pdnsriep"].standard
+#   outbound_endpoint_name = module.resource_names["pdnsroep"].standard
+#   resolver_link_name     = module.resource_names["pdnsrvnl"].standard
+#   resource_group_name    = module.resource_group.name
+#   ruleset_name           = module.resource_names["pdnsrfr"].standard
+#   inbound_subnet_id      = module.inbound_dns_subnet.id
+#   outbound_subnet_id     = module.outbound_dns_subnet.id
+#   tags                   = var.tags
+#   virtual_network_id     = module.dns_resolver_vnet.vnet_id
+#   # TODO add forwarding to Azure-provided DNS for public DNS resolution
+#   # TODO add outound endpoint to "on-premises" DNS servers for corporate DNS resolution
+# }
 
 module "hub_vnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network/azurerm"
@@ -151,8 +151,8 @@ module "hub_vnet" {
   resource_group_name = module.resource_group.name
   vnet_location       = var.location
   vnet_name           = local.hub_vnet_name
-  dns_servers         = [module.private_dns_resolver.private_dns_resolver_ip]
-  depends_on          = [module.resource_group, module.network_security_group]
+  # dns_servers         = [module.private_dns_resolver.private_dns_resolver_ip]
+  depends_on = [module.resource_group, module.network_security_group]
 }
 
 module "peer_hub_vnet_to_resolver_vnet" {

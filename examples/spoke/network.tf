@@ -73,8 +73,8 @@ module "spoke_vnet" {
   resource_group_name = module.resource_group.name
   vnet_location       = var.location
   vnet_name           = local.spoke_vnet_name
-  dns_servers         = [var.private_dns_resolver_ip]
-  depends_on          = [module.resource_group, module.network_security_group]
+  # dns_servers         = [var.private_dns_resolver_ip]
+  depends_on = [module.resource_group, module.network_security_group]
 }
 
 module "storage_subnet" {

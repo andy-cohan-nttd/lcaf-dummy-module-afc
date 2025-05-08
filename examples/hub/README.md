@@ -34,7 +34,6 @@ The key test is of the polices which should:
 | <a name="module_outbound_dns_subnet"></a> [outbound\_dns\_subnet](#module\_outbound\_dns\_subnet) | terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm | ~> 1.1 |
 | <a name="module_peer_hub_vnet_to_resolver_vnet"></a> [peer\_hub\_vnet\_to\_resolver\_vnet](#module\_peer\_hub\_vnet\_to\_resolver\_vnet) | terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm | ~> 1.2 |
 | <a name="module_peer_resolver_vnet_to_hub_vnet"></a> [peer\_resolver\_vnet\_to\_hub\_vnet](#module\_peer\_resolver\_vnet\_to\_hub\_vnet) | terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm | ~> 1.2 |
-| <a name="module_private_dns_resolver"></a> [private\_dns\_resolver](#module\_private\_dns\_resolver) | ../../../tf-azurerm-module_collection-private_dns_resolver | n/a |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.0 |
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.1 |
 | <a name="module_short_names"></a> [short\_names](#module\_short\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.1 |
