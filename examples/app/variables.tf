@@ -51,5 +51,4 @@ variable "vm_subnet" {
 variable "ssh_public_key_path" {
   description = "Path to the SSH public key for VM access"
   type        = string
-  default     = "~/.ssh/id_lcaf.pub"
 }

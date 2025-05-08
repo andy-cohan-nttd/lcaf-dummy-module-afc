@@ -40,7 +40,7 @@
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment name e.g. sandbox | `string` | n/a | yes |
 | <a name="input_location"></a> [location](#input\_location) | The Azure region where resources will be created. This should be a valid Azure region. | `string` | n/a | yes |
 | <a name="input_product_family"></a> [product\_family](#input\_product\_family) | The product family for the resources, used for naming conventions. | `string` | n/a | yes |
-| <a name="input_ssh_public_key_path"></a> [ssh\_public\_key\_path](#input\_ssh\_public\_key\_path) | Path to the SSH public key for VM access | `string` | `"~/.ssh/id_lcaf.pub"` | no |
+| <a name="input_ssh_public_key_path"></a> [ssh\_public\_key\_path](#input\_ssh\_public\_key\_path) | Path to the SSH public key for VM access | `string` | n/a | yes |
 | <a name="input_storage_subnet"></a> [storage\_subnet](#input\_storage\_subnet) | Storage subnet configuration | <pre>object({<br/>    subnet_name    = string<br/>    vnet_name      = string<br/>    resource_group = string<br/>  })</pre> | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the resources | `map(string)` | n/a | yes |
 | <a name="input_vm_subnet"></a> [vm\_subnet](#input\_vm\_subnet) | VM subnet configuration | <pre>object({<br/>    subnet_name    = string<br/>    vnet_name      = string<br/>    resource_group = string<br/>  })</pre> | n/a | yes |

@@ -15,3 +15,4 @@ vm_subnet = {
   vnet_name      = "pdnsadmstestsandbox000svnet"
   resource_group = "pdnsadms-test-eastus2-sandbox-000-rg-000"
 }
+ssh_public_key_path = "~/.ssh/id_lcaf.pub"

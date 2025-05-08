@@ -38,7 +38,6 @@ module "short_names" {
   maximum_length          = 20
 }
 
-
 module "resource_group" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm"
   version = "~> 1.0"

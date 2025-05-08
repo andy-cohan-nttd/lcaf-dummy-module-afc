@@ -13,6 +13,16 @@
 locals {
   spoke_vnet_name = module.resource_names["svnet"].recommended_per_length_restriction
   nsg_name        = module.resource_names["nsg"].minimal_random_suffix
+  azure_private_zones = [
+    "blob.core.windows.net",
+    "vaultcore.azure.net"
+    # "afs.azure.net",
+    # "dfs.core.windows.net",
+    # "file.core.windows.net",
+    # "queue.core.windows.net",
+    # "table.core.windows.net",
+    # "web.core.windows.net",
+  ]
 }
 
 module "network_security_group" {
@@ -103,7 +113,7 @@ module "peer_hub_vnet_to_spoke_vnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
   version = "~> 1.2"
 
-  peering_name                 = "peer_hub_to_spoke" # "peer${var.hub_vnet.name}_to_${local.spoke_vnet_name}"
+  peering_name                 = "peer_hub_to_spoke"
   resource_group_name          = var.hub_vnet.resource_group
   virtual_network_name         = var.hub_vnet.name
   remote_virtual_network_id    = module.spoke_vnet.vnet_id
@@ -120,7 +130,7 @@ module "peer_spoke_vnet_to_hub_vnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/vnet_peering/azurerm"
   version = "~> 1.2"
 
-  peering_name                 = "peer_spoke_to_hub" # "peer${local.spoke_vnet_name}_to_${var.hub_vnet.name}"
+  peering_name                 = "peer_spoke_to_hub"
   resource_group_name          = module.resource_group.name
   virtual_network_name         = local.spoke_vnet_name
   remote_virtual_network_id    = data.azurerm_virtual_network.hub_vnet.id
@@ -134,8 +144,7 @@ module "peer_spoke_vnet_to_hub_vnet" {
 resource "azurerm_private_dns_zone_virtual_network_link" "privatelink_dns_vnet_link_spoke" {
   for_each = toset(local.azure_private_zones)
 
-  name = module.resource_names["pdzvnps"].minimal_random_suffix
-  # resource_group_name   = module.resource_group.name
+  name                  = module.resource_names["pdzvnps"].minimal_random_suffix
   resource_group_name   = var.hub_vnet.resource_group
   private_dns_zone_name = "privatelink.${each.value}"
   virtual_network_id    = module.spoke_vnet.vnet_id
