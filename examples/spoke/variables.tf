@@ -42,23 +42,10 @@ variable "storage_subnet_address_space" {
   default     = "10.55.0.0/26"
 }
 
-variable "private_dns_resolver_ip" {
-  description = "The IP address of the private DNS resolver"
-  type        = string
-}
-
 variable "hub_vnet" {
   type = object({
     name           = string
     resource_group = string
   })
   description = "coordinates of the hub virtual network"
-}
-
-variable "resolver_vnet" {
-  type = object({
-    name           = string
-    resource_group = string
-  })
-  description = "coordinates of the resolver virtual network"
 }
