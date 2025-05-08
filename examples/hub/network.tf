@@ -13,6 +13,16 @@
 locals {
   hub_vnet_name = module.resource_names["hvnet"].recommended_per_length_restriction
   nsg_name      = module.resource_names["nsg"].minimal_random_suffix
+  azure_private_zones = [
+    "blob.core.windows.net",
+    "vaultcore.azure.net"
+    # "afs.azure.net",
+    # "dfs.core.windows.net",
+    # "file.core.windows.net",
+    # "queue.core.windows.net",
+    # "table.core.windows.net",
+    # "web.core.windows.net",
+  ]
 }
 
 module "network_security_group" {
@@ -74,4 +84,23 @@ module "hub_vnet" {
   vnet_location       = var.location
   vnet_name           = local.hub_vnet_name
   depends_on          = [module.resource_group, module.network_security_group]
+}
+
+resource "azurerm_private_dns_zone" "privatelink_dns_zone" {
+  for_each = toset(local.azure_private_zones)
+
+  name                = "privatelink.${each.value}"
+  resource_group_name = module.resource_group.name
+  depends_on          = [module.resource_group]
+}
+
+# link hub vnet to private dns zones
+resource "azurerm_private_dns_zone_virtual_network_link" "privatelink_dns_vnet_link" {
+  for_each = toset(local.azure_private_zones)
+
+  name                  = module.resource_names["pdzvnp"].minimal_random_suffix
+  resource_group_name   = module.resource_group.name
+  private_dns_zone_name = "privatelink.${each.value}"
+  virtual_network_id    = module.hub_vnet.vnet_id
+  depends_on            = [azurerm_private_dns_zone.privatelink_dns_zone]
 }
