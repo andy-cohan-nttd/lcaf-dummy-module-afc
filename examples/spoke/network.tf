@@ -86,11 +86,11 @@ module "spoke_vnet" {
   depends_on          = [module.resource_group, module.network_security_group]
 }
 
-module "storage_subnet" {
+module "app_subnet" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_network_subnet/azurerm"
   version = "~> 1.1"
 
-  address_prefix              = var.storage_subnet_address_space
+  address_prefix              = var.app_subnet_address_space
   name                        = module.resource_names["stsn"].standard
   network_security_group_name = local.nsg_name
   resource_group_name         = module.resource_group.name

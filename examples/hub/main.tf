@@ -62,9 +62,9 @@ module "management_group" {
     display_name = "Management Group for PDNS Policy"
   }
   deny_private_dns_zone_policy = {
-    name         = module.short_names["poldns"].minimal_random_suffix
+    name         = "deny-prvt-dns-zone"
     display_name = "Deny Private DNS Zone Creation"
-    description  = "This policy restricts creation of private DNS zones with the `privatelink` prefix"
+    description  = "Denies creation of private DNS zones with the `privatelink` prefix"
   }
   blob_dns_policy = {
     name         = "deploy-prvt-dns-blob-stg"
@@ -79,7 +79,7 @@ module "management_group" {
   storage_public_access_policy = {
     name         = "deny-public-strg-access"
     display_name = "Deny Public Storage Access"
-    description  = "This policy restricts public access to all storage accounts"
+    description  = "Denies public access to all storage accounts"
   }
   depends_on = [module.resource_group]
 }

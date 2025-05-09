@@ -30,17 +30,8 @@ variable "product_family" {
   type        = string
 }
 
-variable "storage_subnet" {
-  description = "Storage subnet configuration"
-  type = object({
-    subnet_name    = string
-    vnet_name      = string
-    resource_group = string
-  })
-}
-
-variable "vm_subnet" {
-  description = "VM subnet configuration"
+variable "app_subnet" {
+  description = "App subnet configuration"
   type = object({
     subnet_name    = string
     vnet_name      = string

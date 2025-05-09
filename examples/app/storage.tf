@@ -2,10 +2,10 @@ locals {
   storage_account_name = module.resource_names["sa"].recommended_per_length_restriction
 }
 
-data "azurerm_subnet" "storage_subnet" {
-  name                 = var.storage_subnet.subnet_name
-  virtual_network_name = var.storage_subnet.vnet_name
-  resource_group_name  = var.storage_subnet.resource_group
+data "azurerm_subnet" "app_subnet" {
+  name                 = var.app_subnet.subnet_name
+  virtual_network_name = var.app_subnet.vnet_name
+  resource_group_name  = var.app_subnet.resource_group
 }
 
 module "storage_account" {
@@ -18,7 +18,7 @@ module "storage_account" {
   resource_group_name           = module.resource_group.name
   storage_account_name          = local.storage_account_name
   network_rules = {
-    virtual_network_subnet_ids = [data.azurerm_subnet.storage_subnet.id]
+    virtual_network_subnet_ids = [data.azurerm_subnet.app_subnet.id]
   }
   depends_on = [module.resource_group]
 }
@@ -29,7 +29,7 @@ resource "azurerm_private_endpoint" "storage_pe" {
   name                = module.resource_names["stpe"].standard
   resource_group_name = module.resource_group.name
   location            = var.location
-  subnet_id           = data.azurerm_subnet.storage_subnet.id
+  subnet_id           = data.azurerm_subnet.app_subnet.id
 
   private_service_connection {
     name                           = "pe-${local.storage_account_name}"
