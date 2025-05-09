@@ -13,13 +13,14 @@
 locals {
   hub_vnet_name = module.resource_names["hvnet"].recommended_per_length_restriction
   nsg_name      = module.resource_names["nsg"].minimal_random_suffix
+
   azure_private_zones = [
     "blob.core.windows.net",
-    "vaultcore.azure.net"
+    "vaultcore.azure.net",
+    "queue.core.windows.net",
     # "afs.azure.net",
     # "dfs.core.windows.net",
     # "file.core.windows.net",
-    # "queue.core.windows.net",
     # "table.core.windows.net",
     # "web.core.windows.net",
   ]

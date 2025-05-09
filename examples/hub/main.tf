@@ -50,7 +50,6 @@ module "resource_group" {
 module "management_group" {
   source = "../.."
 
-  blob_private_dnz_zone_id      = azurerm_private_dns_zone.privatelink_dns_zone["blob.core.windows.net"].id
   deploy_identity_name          = module.resource_names["deployer"].minimal_random_suffix
   keyvault_private_dns_zone_id  = azurerm_private_dns_zone.privatelink_dns_zone["vaultcore.azure.net"].id
   location                      = var.location
@@ -66,20 +65,50 @@ module "management_group" {
     display_name = "Deny Private DNS Zone Creation"
     description  = "Denies creation of private DNS zones with the `privatelink` prefix"
   }
-  blob_dns_policy = {
-    name         = "deploy-prvt-dns-blob-stg"
-    display_name = "Configure Azure Blob Storage to use private DNS zones"
-    description  = "Ensures private endpoints to Azure Blob Storage are integrated with Azure Private DNS zones"
-  }
-  keyvault_dns_policy = {
-    name         = "deploy-prvt-dns-kvs"
-    display_name = "Configure Azure Keyvaults to use private DNS zones"
-    description  = "Ensures private endpoints to Azure Keyvaults are integrated with Azure Private DNS zones"
-  }
   storage_public_access_policy = {
     name         = "deny-public-strg-access"
     display_name = "Deny Public Storage Access"
     description  = "Denies public access to all storage accounts"
   }
+  private_dns_zones = {
+    "blob.core.windows.net" = {
+      assignment_name         = "deploy-prvt-dns-blob-stg"
+      assignment_display_name = "Configure Azure Blob Storage to use private DNS zones"
+      assignment_description  = "Ensures private endpoints to Azure Blob Storage are integrated with Azure Private DNS zones"
+      private_dns_zone_id     = azurerm_private_dns_zone.privatelink_dns_zone["blob.core.windows.net"].id
+    }
+    "vaultcore.azure.net" = {
+      assignment_name         = "deploy-prvt-dns-kvs"
+      assignment_display_name = "Configure Azure Keyvaults to use private DNS zones"
+      assignment_description  = "Ensures private endpoints to Azure Keyvaults are integrated with Azure Private DNS zones"
+      private_dns_zone_id     = azurerm_private_dns_zone.privatelink_dns_zone["vaultcore.azure.net"].id
+    }
+    "queue.core.windows.net" = {
+      assignment_name         = "dply-prvt-dns-queue"
+      assignment_display_name = "Configure Azure Storage Account queues to use private DNS zones"
+      assignment_description  = "Ensures private endpoints to Azure Storage Account queues are integrated with Azure Private DNS zones"
+      private_dns_zone_id     = azurerm_private_dns_zone.privatelink_dns_zone["queue.core.windows.net"].id
+    }
+  }
+  # blob_dns_policy = {
+  #   private_dns_zone_id = azurerm_private_dns_zone.privatelink_dns_zone["blob.core.windows.net"].id
+  # }
+  # blob_2nd_dns_policy = {
+  #   name                = "deply-prvt-dns-blob2-stg" # TODO
+  #   display_name        = "Configure Azure Blob Secondary Storage to use private DNS zones"
+  #   description         = "Ensures private endpoints to Azure Blob Secondary Storage are integrated with Azure Private DNS zones"
+  #   private_dns_zone_id = azurerm_private_dns_zone.privatelink_dns_zone["blob.core.windows.net"].id
+  # }
+  # keyvault_dns_policy = {
+  #   name         = "deploy-prvt-dns-kvs"
+  #   display_name = "Configure Azure Keyvaults to use private DNS zones"
+  #   description  = "Ensures private endpoints to Azure Keyvaults are integrated with Azure Private DNS zones"
+  # }
+  # queue_dns_policy = {
+  #   name                = "dply-prvt-dns-queue"
+  #   display_name        = "Configure Azure Storage Account queues to use private DNS zones"
+  #   description         = "Ensures private endpoints to Azure Storage Account queues are integrated with Azure Private DNS zones"
+  #   private_dns_zone_id = azurerm_private_dns_zone.privatelink_dns_zone["blob.core.windows.net"].id
+  # }
   depends_on = [module.resource_group]
 }

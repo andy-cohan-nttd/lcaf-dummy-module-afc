@@ -23,10 +23,10 @@ variable "spoke_subscription_ids" {
   description = "Subscription IDs for the spoke subscriptions"
 }
 
-variable "blob_private_dnz_zone_id" {
-  type        = string
-  description = "Private DNS zone (privatelink.blob.core.windows.net) ID for blob storage"
-}
+# variable "blob_private_dns_zone_id" {
+#   type        = string
+#   description = "Private DNS zone (privatelink.blob.core.windows.net) ID for blob storage"
+# }
 
 variable "keyvault_private_dns_zone_id" {
   type        = string
@@ -60,22 +60,51 @@ variable "deny_private_dns_zone_policy" {
     description  = string
   })
 }
-
-variable "blob_dns_policy" {
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
+variable "private_dns_zones" {
+  description = "Map of Azure Private DNS zones to create policies for, such that private DNS entries are created for the specified services."
+  type = map(object({
+    assignment_name         = string
+    assignment_display_name = string
+    assignment_description  = string
+    private_dns_zone_id     = string
+  }))
 }
 
-variable "keyvault_dns_policy" {
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-}
+# variable "blob_dns_policy" {
+#   type = object({
+#     name                = string
+#     display_name        = string
+#     description         = string
+#     private_dns_zone_id = string
+#   })
+# }
+
+# variable "blob_2nd_dns_policy" {
+#   type = object({
+#     name                = string
+#     display_name        = string
+#     description         = string
+#     private_dns_zone_id = string
+#   })
+# }
+
+# variable "keyvault_dns_policy" {
+#   type = object({
+#     name                = string
+#     display_name        = string
+#     description         = string
+#     private_dns_zone_id = string
+#   })
+# }
+
+# variable "queue_dns_policy" {
+#   type = object({
+#     name                = string
+#     display_name        = string
+#     description         = string
+#     private_dns_zone_id = string
+#   })
+# }
 
 variable "storage_public_access_policy" {
   type = object({
