@@ -63,7 +63,7 @@ resource "azurerm_management_group_policy_assignment" "pe_dns_policy" {
     for assignment in local.policy_assignments : assignment.policy_id => assignment
   })
 
-  name                 = each.value.assignment_name
+  name                 = "${substr(each.value.assignment_name, 0, 18)}-${substr(each.value.policy_id, 0, 5)}" # uniquify
   display_name         = each.value.assignment_display_name
   description          = each.value.assignment_description
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/${each.value.policy_id}"
