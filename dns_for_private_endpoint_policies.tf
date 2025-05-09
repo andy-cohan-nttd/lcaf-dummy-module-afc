@@ -9,23 +9,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-# azure_private_dns_zones = {
-#   blob.core.windows.net = {
-#     name         = "deploy-prvt-dns-blob-stg"
-#     display_name = "Configure Azure Blob Storage to use private DNS zones"
-#     description  = "Ensures private endpoints to Azure Blob Storage are integrated with Azure Private DNS zones"
-#   }
-#   vaultcore.azure.net = {
-#     name         = "deploy-prvt-dns-kvs"
-#     display_name = "Configure Azure Keyvaults to use private DNS zones"
-#     description  = "Ensures private endpoints to Azure Keyvaults are integrated with Azure Private DNS zones"
-#   }
-#   queue.core.windows.net = {
-#     name         = "dply-prvt-dns-queue"
-#     display_name = "Configure Azure Storage Account queues to use private DNS zones"
-#     description  = "Ensures private endpoints to Azure Storage Account queues are integrated with Azure Private DNS zones"
-#   }
-# }
+
 locals {
   policy_definitions = {
     "blob.core.windows.net" = {
@@ -44,6 +28,7 @@ locals {
         "bcff79fb-2b0d-47c9-97e5-3023479b00d1"
       ]
     }
+    # TODO add the rest of the most common Azure services
   }
   policy_assignments = flatten([
     for domain in keys(var.private_dns_zones) : [
@@ -68,17 +53,16 @@ resource "azurerm_management_group_policy_assignment" "pe_dns_policy" {
   description          = each.value.assignment_description
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/${each.value.policy_id}"
   management_group_id  = module.management_group.management_group.id
-  parameters           = <<PARAMETERS
+  location             = var.location
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.auto_deploy_identity.id]
+  }
+  parameters = <<PARAMETERS
     {
       "privateDnsZoneId": {
         "value": "${each.value.private_dns_zone_id}"
       }
     }
 PARAMETERS
-
-  location = var.location
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.auto_deploy_identity.id]
-  }
 }

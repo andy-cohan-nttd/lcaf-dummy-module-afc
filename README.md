@@ -140,8 +140,7 @@ If `make check` target is successful, developer is good to commit the code to pr
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_deny_private_dns_zone_policy"></a> [deny\_private\_dns\_zone\_policy](#input\_deny\_private\_dns\_zone\_policy) | n/a | <pre>object({<br/>    name         = string<br/>    display_name = string<br/>    description  = string<br/>  })</pre> | n/a | yes |
-| <a name="input_deploy_identity_name"></a> [deploy\_identity\_name](#input\_deploy\_identity\_name) | Name of the user assigned identity for deployment | `string` | n/a | yes |
-| <a name="input_keyvault_private_dns_zone_id"></a> [keyvault\_private\_dns\_zone\_id](#input\_keyvault\_private\_dns\_zone\_id) | Private DNS zone (privatelink.vaultcore.azure.net) ID for keyvaults | `string` | n/a | yes |
+| <a name="input_deployment_identity_name"></a> [deployment\_identity\_name](#input\_deployment\_identity\_name) | Name of the user assigned identity for deployment | `string` | n/a | yes |
 | <a name="input_location"></a> [location](#input\_location) | Azure region of the deployed resources | `string` | n/a | yes |
 | <a name="input_management_group"></a> [management\_group](#input\_management\_group) | Management group values | <pre>object({<br/>    name         = string<br/>    display_name = string<br/>  })</pre> | n/a | yes |
 | <a name="input_private_dns_resource_group_id"></a> [private\_dns\_resource\_group\_id](#input\_private\_dns\_resource\_group\_id) | Resource group ID where the privatelink DNS zones reside | `string` | n/a | yes |

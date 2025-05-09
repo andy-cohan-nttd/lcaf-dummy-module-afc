@@ -13,7 +13,8 @@
 module "management_group" {
   # source  = "terraform.registry.launch.nttdata.com/module_primitive/management_group/azurerm"
   # version = "~> 1.0"
-  source = "../../launchbynttdata/tf-azurerm-module_primitive-management_group" # Use the local path for testing
+  # TODO publish new module and use above
+  source = "../../launchbynttdata/tf-azurerm-module_primitive-management_group"
 
   name             = var.management_group.name
   display_name     = var.management_group.display_name

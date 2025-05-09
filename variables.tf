@@ -23,17 +23,7 @@ variable "spoke_subscription_ids" {
   description = "Subscription IDs for the spoke subscriptions"
 }
 
-# variable "blob_private_dns_zone_id" {
-#   type        = string
-#   description = "Private DNS zone (privatelink.blob.core.windows.net) ID for blob storage"
-# }
-
-variable "keyvault_private_dns_zone_id" {
-  type        = string
-  description = "Private DNS zone (privatelink.vaultcore.azure.net) ID for keyvaults"
-}
-
-variable "deploy_identity_name" {
+variable "deployment_identity_name" {
   type        = string
   description = "Name of the user assigned identity for deployment"
 }
@@ -69,42 +59,6 @@ variable "private_dns_zones" {
     private_dns_zone_id     = string
   }))
 }
-
-# variable "blob_dns_policy" {
-#   type = object({
-#     name                = string
-#     display_name        = string
-#     description         = string
-#     private_dns_zone_id = string
-#   })
-# }
-
-# variable "blob_2nd_dns_policy" {
-#   type = object({
-#     name                = string
-#     display_name        = string
-#     description         = string
-#     private_dns_zone_id = string
-#   })
-# }
-
-# variable "keyvault_dns_policy" {
-#   type = object({
-#     name                = string
-#     display_name        = string
-#     description         = string
-#     private_dns_zone_id = string
-#   })
-# }
-
-# variable "queue_dns_policy" {
-#   type = object({
-#     name                = string
-#     display_name        = string
-#     description         = string
-#     private_dns_zone_id = string
-#   })
-# }
 
 variable "storage_public_access_policy" {
   type = object({

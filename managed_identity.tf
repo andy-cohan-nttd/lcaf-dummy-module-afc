@@ -11,7 +11,7 @@
 // limitations under the License.
 
 resource "azurerm_user_assigned_identity" "auto_deploy_identity" {
-  name                = var.deploy_identity_name
+  name                = var.deployment_identity_name
   resource_group_name = var.resource_group_name
   location            = var.location
   # depends_on          = [module.resource_group]
