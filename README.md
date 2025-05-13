@@ -144,12 +144,14 @@ If `make check` target is successful, developer is good to commit the code to pr
 | <a name="input_location"></a> [location](#input\_location) | Azure region of the deployed resources | `string` | n/a | yes |
 | <a name="input_management_group"></a> [management\_group](#input\_management\_group) | Management group values | <pre>object({<br/>    name         = string<br/>    display_name = string<br/>  })</pre> | n/a | yes |
 | <a name="input_private_dns_resource_group_id"></a> [private\_dns\_resource\_group\_id](#input\_private\_dns\_resource\_group\_id) | Resource group ID where the privatelink DNS zones reside | `string` | n/a | yes |
-| <a name="input_private_dns_zones"></a> [private\_dns\_zones](#input\_private\_dns\_zones) | Map of Azure Private DNS zones to create policies for, such that private DNS entries are created for the specified services. | <pre>map(object({<br/>    assignment_name         = string<br/>    assignment_display_name = string<br/>    assignment_description  = string<br/>    private_dns_zone_id     = string<br/>  }))</pre> | n/a | yes |
+| <a name="input_private_dns_zones"></a> [private\_dns\_zones](#input\_private\_dns\_zones) | Map of Azure Private DNS zones to create policies for, such that private DNS A records are created for the specified services. | <pre>map(object({<br/>    private_dns_zone_id     = string<br/>    assignment_name         = string<br/>    assignment_display_name = string<br/>    assignment_description  = string<br/>  }))</pre> | n/a | yes |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Name of the resource group into which the resources will be deployed | `string` | n/a | yes |
 | <a name="input_spoke_subscription_ids"></a> [spoke\_subscription\_ids](#input\_spoke\_subscription\_ids) | Subscription IDs for the spoke subscriptions | `set(string)` | n/a | yes |
 | <a name="input_storage_public_access_policy"></a> [storage\_public\_access\_policy](#input\_storage\_public\_access\_policy) | n/a | <pre>object({<br/>    name         = string<br/>    display_name = string<br/>    description  = string<br/>  })</pre> | n/a | yes |
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_management_group_id"></a> [management\_group\_id](#output\_management\_group\_id) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

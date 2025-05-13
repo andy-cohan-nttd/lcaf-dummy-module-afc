@@ -11,11 +11,11 @@
 // limitations under the License.
 
 # disallow public access to all storage accounts
-# TODO make conditional
 resource "azurerm_management_group_policy_assignment" "deny_public_storage_access" {
-  name                 = var.storage_public_access_policy.name         # "deny-public-strg-access"
-  display_name         = var.storage_public_access_policy.display_name # "Deny Public Storage Access"
-  description          = var.storage_public_access_policy.description  # "This policy restricts public access to all storage accounts"
+  # TODO make conditional
+  name                 = var.storage_public_access_policy.name
+  display_name         = var.storage_public_access_policy.display_name
+  description          = var.storage_public_access_policy.description
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/4fa4b6c0-31ca-4c0d-b10d-24b96f62a751"
   management_group_id  = module.management_group.management_group.id
   enforce              = true

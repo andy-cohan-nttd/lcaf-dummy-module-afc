@@ -50,13 +50,14 @@ variable "deny_private_dns_zone_policy" {
     description  = string
   })
 }
+
 variable "private_dns_zones" {
-  description = "Map of Azure Private DNS zones to create policies for, such that private DNS entries are created for the specified services."
+  description = "Map of Azure Private DNS zones to create policies for, such that private DNS A records are created for the specified services."
   type = map(object({
+    private_dns_zone_id     = string
     assignment_name         = string
     assignment_display_name = string
     assignment_description  = string
-    private_dns_zone_id     = string
   }))
 }
 
